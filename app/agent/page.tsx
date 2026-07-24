@@ -11,6 +11,8 @@ import {
   DropOverlay,
   useImageAttachment,
 } from "@/app/lib/imageAttachment";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/app/lib/auth";
 
 // Metadane narzędzi: emoji + etykieta do osi czasu i panelu możliwości.
 const TOOL_META: Record<string, { emoji: string; label: string }> = {
@@ -19,6 +21,8 @@ const TOOL_META: Record<string, { emoji: string; label: string }> = {
   google_search: { emoji: "🌐", label: "Wyszukiwarka Google" },
   readWebPage: { emoji: "📄", label: "Czytanie stron WWW" },
   generateImage: { emoji: "🎨", label: "Generowanie obrazów" },
+  saveUserName: { emoji: "🙋", label: "Zapamiętanie imienia" },
+  saveUserPreference: { emoji: "📌", label: "Zapamiętanie preferencji" },
 };
 
 const CAPABILITIES = [
@@ -141,18 +145,85 @@ export default function AgentPage() {
     () => new DefaultChatTransport({ api: "/api/agent" }),
     [],
   );
+  const { user } = useAuth();
   const { messages, sendMessage, status, setMessages } = useChat({ transport });
   const [input, setInput] = useState("");
   const attach = useImageAttachment();
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  // Powitanie odzywa się raz na sesję (reset przy "Nowa rozmowa").
+  const greetedRef = useRef(false);
 
   const isLoading = status === "submitted" || status === "streaming";
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
+
+  // Personalizacja (Warsztat 4): tożsamość z logowania (Supabase Auth). user.id
+  // to auth.uid() — ten sam identyfikator trzyma user_profiles, więc agent wita
+  // po imieniu i pamięta preferencje konta. Pierwsze wejście → zakładamy pusty
+  // profil (name = null), żeby agent wiedział, że ma zapytać o imię.
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    const id = user.id;
+
+    (async () => {
+      const { data } = await supabase
+        .from("user_profiles")
+        .select("id")
+        .eq("id", id)
+        .maybeSingle();
+      if (!data) {
+        await supabase.from("user_profiles").insert({ id });
+      }
+      if (!cancelled) setUserId(id);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  // Powitanie: gdy rozmowa jest pusta, agent odzywa się pierwszy. Treść układa
+  // /api/greeting na podstawie profilu — dlatego po odświeżeniu strony wita po
+  // imieniu, a nowego użytkownika prosi o imię. Powitanie żyje tylko w UI.
+  useEffect(() => {
+    if (!userId || messages.length > 0 || greetedRef.current) return;
+    greetedRef.current = true;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const res = await fetch("/api/greeting", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId, variant: "agent" }),
+        });
+        const { greeting } = await res.json();
+        if (!greeting || cancelled) return;
+
+        setMessages([
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            parts: [{ type: "text", text: greeting }],
+          },
+        ]);
+      } catch (err) {
+        // Powitanie jest dodatkiem — jego brak nie może blokować agenta.
+        console.warn("Nie udało się pobrać powitania.", err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, messages.length, setMessages]);
 
   // Licznik czasu odpowiedzi.
   useEffect(() => {
@@ -169,7 +240,9 @@ export default function AgentPage() {
     const files = attach.toFileParts();
     setStartedAt(Date.now());
     setElapsed(0);
-    sendMessage(files.length ? { text: trimmed, files } : { text: trimmed });
+    sendMessage(files.length ? { text: trimmed, files } : { text: trimmed }, {
+      body: { userId },
+    });
     attach.clear();
     setInput("");
   }
@@ -244,6 +317,8 @@ export default function AgentPage() {
             setInput("");
             setStartedAt(null);
             setElapsed(0);
+            // Pusta rozmowa → agent przywita się na nowo (z aktualnego profilu).
+            greetedRef.current = false;
           }}
           disabled={messages.length === 0}
           style={{

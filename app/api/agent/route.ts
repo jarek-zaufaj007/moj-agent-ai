@@ -14,7 +14,9 @@ import {
   currentDateTime,
   readWebPage,
   generateImageData,
+  createProfileTools,
 } from "@/app/lib/tools";
+import { buildPersonalization } from "@/app/lib/persona";
 
 export const maxDuration = 60;
 
@@ -58,9 +60,15 @@ ZASADY:
 - Bądź konkretny i rzeczowy. Język: polski.`;
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  const { messages, userId }: { messages: UIMessage[]; userId?: string } =
+    await req.json();
 
   const modelMessages = await convertToModelMessages(messages);
+
+  // Personalizacja (Warsztat 4): dokładamy do system promptu dane użytkownika
+  // z user_profiles — dzięki temu agent wita po imieniu, a nowego użytkownika
+  // sam pyta o imię. Narzędzia profilu (niżej) pozwalają mu to imię zapamiętać.
+  const system = SYSTEM + (await buildPersonalization(userId));
 
   const stream = createUIMessageStream({
     onError: () =>
@@ -97,7 +105,7 @@ export async function POST(req: Request) {
       for (const modelId of MODELS) {
         const result = streamText({
           model: google(modelId),
-          system: SYSTEM,
+          system,
           messages: modelMessages,
           tools: {
             calculator,
@@ -109,6 +117,9 @@ export async function POST(req: Request) {
               : {}),
             readWebPage,
             generateImage,
+            // Narzędzia profilu — tylko gdy wiemy, czyj profil aktualizować.
+            // saveUserName zapamiętuje imię, saveUserPreference — inne fakty.
+            ...(userId ? createProfileTools(userId) : {}),
           },
           // Pozwól agentowi na pętlę wielokrokową: szukaj → czytaj → licz → rysuj → odpowiedz.
           stopWhen: stepCountIs(maxSteps),

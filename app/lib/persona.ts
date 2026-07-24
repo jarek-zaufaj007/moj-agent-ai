@@ -60,6 +60,14 @@ export function missingFacts(prefs: Record<string, unknown>): ProfileFactKey[] {
   );
 }
 
+// Baza powitania dla strony /agent (multi-tool). Powitanie z /api/greeting
+// składa się z tej bazy + buildPersonalization(userId). Agent multi-tool ma inny
+// głos niż Maja, więc nie może witać jako "specjalistka ds. marketingu" — stąd
+// osobna, krótka tożsamość używana TYLKO do powitania (pełny system prompt
+// agenta, z listą narzędzi, żyje w /api/agent/route.ts).
+export const AGENT_SYSTEM = `Jesteś wszechstronnym agentem AI z zestawem narzędzi (kalkulator, aktualna data i godzina, czytanie stron WWW, generowanie obrazów).
+Mówisz po polsku — konkretnie, rzeczowo i przyjaźnie.`;
+
 export const SYSTEM = `# Maja — Specjalistka ds. marketingu i social media
 
 ## KIM JESTEM

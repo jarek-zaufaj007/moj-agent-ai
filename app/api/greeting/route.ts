@@ -1,6 +1,11 @@
 import { google } from "@ai-sdk/google";
 import { generateText, stepCountIs } from "ai";
-import { SYSTEM, buildPersonalization, modelAttempts } from "@/app/lib/persona";
+import {
+  SYSTEM,
+  AGENT_SYSTEM,
+  buildPersonalization,
+  modelAttempts,
+} from "@/app/lib/persona";
 
 export const maxDuration = 30;
 
@@ -28,14 +33,21 @@ Zasady TEGO powitania (nadpisują sekcję "JAK ODPOWIADAM"):
 - Jeśli NIE znasz jego imienia — przedstaw się krótko i zapytaj, jak ma na imię.`;
 
 export async function POST(req: Request) {
-  const { userId, model = "flash" }: { userId?: string; model?: string } =
+  const {
+    userId,
+    model = "flash",
+    variant = "chat",
+  }: { userId?: string; model?: string; variant?: "chat" | "agent" } =
     await req.json();
 
   if (!userId) {
     return Response.json({ greeting: null });
   }
 
-  const system = SYSTEM + (await buildPersonalization(userId));
+  // Baza tożsamości zależy od tego, kto wita: Maja (czat) czy agent multi-tool.
+  // Personalizację (imię, preferencje) dokładamy tak samo w obu przypadkach.
+  const base = variant === "agent" ? AGENT_SYSTEM : SYSTEM;
+  const system = base + (await buildPersonalization(userId));
 
   let lastError: unknown;
   for (const modelId of modelAttempts(model)) {

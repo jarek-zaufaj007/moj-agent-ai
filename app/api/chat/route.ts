@@ -10,10 +10,10 @@ import {
 import {
   calculator,
   createProfileTools,
+  createSearchKnowledge,
   currentDateTime,
   getExchangeRate,
   getWeather,
-  searchKnowledge,
   searchWikipedia,
 } from "@/app/lib/tools";
 import { SYSTEM, buildPersonalization, modelAttempts } from "@/app/lib/persona";
@@ -47,7 +47,8 @@ export async function POST(req: Request) {
   // brał obietnicę na słowo i zmyślał odpowiedź (podawał pogodę bez sprawdzenia)
   // — dokładnie ta halucynacja, którą reszta tego warsztatu wycina.
   const tools = {
-    searchKnowledge,
+    // Wyszukiwarka wiedzy zawężona do dokumentów zalogowanego użytkownika.
+    searchKnowledge: createSearchKnowledge(userId),
     getWeather,
     getExchangeRate,
     searchWikipedia,

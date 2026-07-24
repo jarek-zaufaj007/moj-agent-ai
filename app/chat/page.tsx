@@ -13,6 +13,7 @@ import {
 import { parseSources } from "@/app/lib/sources";
 import { SourceFooter } from "@/app/lib/sourceFooter";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/app/lib/auth";
 
 type ModelKey = "flash" | "pro";
 
@@ -48,6 +49,7 @@ function messageText(message: { parts: { type: string; text?: string }[] }) {
 }
 
 export default function Home() {
+  const { user } = useAuth();
   const { messages, sendMessage, status, setMessages } = useChat();
   const [input, setInput] = useState("");
   const attach = useImageAttachment();
@@ -74,44 +76,37 @@ export default function Home() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  // 0) Personalizacja: ustal ID użytkownika (localStorage) i profil w Supabase.
-  // Brak logowania (dojdzie w L07) — użytkownika rozpoznajemy po UUID
-  // zapisanym w przeglądarce. Pierwsza wizyta → tworzymy pusty profil.
+  // 0) Personalizacja: tożsamość bierzemy z logowania (Supabase Auth, L07).
+  // user.id to auth.uid() — ten sam identyfikator trzyma user_profiles, więc
+  // agent wita po imieniu i pamięta preferencje danego konta. Pierwsze wejście
+  // konta → zakładamy pusty profil.
   useEffect(() => {
+    if (!user) return;
     let cancelled = false;
+    const id = user.id;
 
     (async () => {
-      let id = localStorage.getItem("user_id");
-
-      if (!id) {
-        // Nowy użytkownik → wygeneruj UUID i utwórz pusty profil.
-        id = crypto.randomUUID();
-        localStorage.setItem("user_id", id);
+      const { data } = await supabase
+        .from("user_profiles")
+        .select("id")
+        .eq("id", id)
+        .maybeSingle();
+      if (!data) {
         await supabase.from("user_profiles").insert({ id });
-      } else {
-        // Powracający → upewnij się, że profil nadal istnieje w bazie
-        // (np. mógł zostać wyczyszczony po stronie Supabase).
-        const { data } = await supabase
-          .from("user_profiles")
-          .select("id")
-          .eq("id", id)
-          .maybeSingle();
-        if (!data) {
-          await supabase.from("user_profiles").insert({ id });
-        }
       }
-
       if (!cancelled) setUserId(id);
     })();
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [user]);
 
   // 1) Wczytaj rozmowę z Supabase: albo konkretną (z ?conversation=<id>,
   //    np. po kliknięciu "Kontynuuj rozmowę" w historii), albo ostatnią.
   useEffect(() => {
+    // Czekamy na tożsamość — bez user.id nie wiemy, czyje rozmowy wczytać.
+    if (!userId) return;
     let cancelled = false;
 
     (async () => {
@@ -119,7 +114,12 @@ export default function Home() {
         "conversation",
       );
 
-      const query = supabase.from("conversations").select("id");
+      // Zawsze filtrujemy po user_id — także przy wejściu z ?conversation=<id>,
+      // żeby nie dało się otworzyć cudzej rozmowy przez URL.
+      const query = supabase
+        .from("conversations")
+        .select("id")
+        .eq("user_id", userId);
       const { data: conv } = requestedId
         ? await query.eq("id", requestedId).maybeSingle()
         : await query.order("updated_at", { ascending: false }).limit(1).maybeSingle();
@@ -151,7 +151,7 @@ export default function Home() {
     return () => {
       cancelled = true;
     };
-  }, [setMessages]);
+  }, [setMessages, userId]);
 
   // 1b) Powitanie: gdy rozmowa jest pusta, agent odzywa się pierwszy. Treść
   //     układa /api/greeting na podstawie profilu z user_profiles — dlatego po
@@ -195,8 +195,9 @@ export default function Home() {
   // 2) Zapis nowych wiadomości do Supabase — w tle, bez blokowania UI.
   useEffect(() => {
     // Nie zapisujemy, dopóki nie skończymy wczytywać historii ani w trakcie streamowania
-    // (czekamy na pełną treść odpowiedzi asystenta).
-    if (loadingHistory || isLoading) return;
+    // (czekamy na pełną treść odpowiedzi asystenta). Bez user.id nie ma do czego
+    // przypisać rozmowy.
+    if (loadingHistory || isLoading || !userId) return;
 
     async function flush() {
       if (flushingRef.current) return;
@@ -212,7 +213,7 @@ export default function Home() {
             const title = text.slice(0, 50);
             const { data: conv, error } = await supabase
               .from("conversations")
-              .insert({ title })
+              .insert({ title, user_id: userId })
               .select("id")
               .single();
             if (error || !conv) {
@@ -246,7 +247,7 @@ export default function Home() {
     }
 
     void flush();
-  }, [messages, isLoading, loadingHistory]);
+  }, [messages, isLoading, loadingHistory, userId]);
 
   function send(text: string) {
     const trimmed = text.trim();

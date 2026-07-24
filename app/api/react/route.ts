@@ -15,7 +15,7 @@ import {
   getExchangeRate,
   getHolidays,
   searchWikipedia,
-  searchKnowledge,
+  createSearchKnowledge,
   saveNote,
   getNotes,
 } from "@/app/lib/tools";
@@ -103,7 +103,8 @@ Cytuj źródła (API, Wikipedia, Google).
 - Jeśli po 3 nieudanych próbach nie masz danych — powiedz wprost czego brakuje`;
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  const { messages, userId }: { messages: UIMessage[]; userId?: string } =
+    await req.json();
 
   const modelMessages = await convertToModelMessages(messages);
 
@@ -126,7 +127,7 @@ export async function POST(req: Request) {
             getExchangeRate,
             getHolidays,
             searchWikipedia,
-            searchKnowledge,
+            searchKnowledge: createSearchKnowledge(userId),
             saveNote,
             getNotes,
             // Wbudowane wyszukiwanie Google (grounding).

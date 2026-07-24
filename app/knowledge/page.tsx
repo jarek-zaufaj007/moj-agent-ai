@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/app/lib/auth";
 import type { KnowledgeHit } from "@/app/lib/knowledge";
 
 // Podgląd bazy wiedzy — co dokładnie widzi agent, gdy sięga po searchKnowledge.
@@ -50,6 +51,7 @@ function plural(n: number, one: string, few: string, many: string): string {
 }
 
 export default function KnowledgePage() {
+  const { user } = useAuth();
   const [docs, setDocs] = useState<DocumentCard[]>([]);
   const [loadingDocs, setLoadingDocs] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -63,12 +65,14 @@ export default function KnowledgePage() {
   // Lista dokumentów: jeden dokument = wiele wierszy (fragmentów),
   // więc grupujemy po tytule i liczymy fragmenty.
   useEffect(() => {
+    if (!user) return;
     let cancelled = false;
 
     (async () => {
       const { data, error } = await supabase
         .from("documents")
         .select("title, created_at")
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (cancelled) return;
@@ -103,17 +107,19 @@ export default function KnowledgePage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [user]);
 
   const loadChunks = useCallback(
     async (title: string) => {
       if (chunks[title]) return; // raz pobrane zostaje w pamięci
+      if (!user) return;
 
       setLoadingChunks(title);
       const { data, error } = await supabase
         .from("documents")
         .select("id, content, metadata")
-        .eq("title", title);
+        .eq("title", title)
+        .eq("user_id", user.id);
       setLoadingChunks(null);
 
       if (error) {
@@ -133,7 +139,7 @@ export default function KnowledgePage() {
 
       setChunks((prev) => ({ ...prev, [title]: list }));
     },
-    [chunks],
+    [chunks, user],
   );
 
   function toggleDoc(title: string) {
@@ -169,7 +175,7 @@ export default function KnowledgePage() {
       const res = await fetch("/api/knowledge-search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: q }),
+        body: JSON.stringify({ query: q, userId: user?.id }),
       });
       const data = await res.json();
 

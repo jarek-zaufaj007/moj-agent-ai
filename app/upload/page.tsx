@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/app/lib/auth";
 
 // Dokument widziany "z lotu ptaka" — w bazie leży pokrojony na fragmenty,
 // ale użytkownik wrzucał jeden plik i chce go widzieć jako jedną pozycję.
@@ -42,6 +43,7 @@ function formatDate(iso: string): string {
 }
 
 export default function UploadPage() {
+  const { user } = useAuth();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [status, setStatus] = useState<Status>({ kind: "idle" });
@@ -54,9 +56,11 @@ export default function UploadPage() {
   // Lista dokumentów: w bazie jeden dokument = wiele wierszy (fragmentów),
   // więc grupujemy po tytule i liczymy fragmenty.
   const loadDocs = useCallback(async () => {
+    if (!user) return;
     const { data, error } = await supabase
       .from("documents")
       .select("title, created_at")
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -83,14 +87,14 @@ export default function UploadPage() {
 
     setDocs([...byTitle.values()]);
     setLoadingDocs(false);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     void loadDocs();
   }, [loadDocs]);
 
   async function save() {
-    if (!title.trim() || !content.trim() || isWorking) return;
+    if (!title.trim() || !content.trim() || isWorking || !user) return;
 
     setStatus({ kind: "working", current: 0, total: 0 });
 
@@ -98,7 +102,8 @@ export default function UploadPage() {
       const res = await fetch("/api/upload-knowledge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content }),
+        // userId → serwer zapisze fragmenty z user_id (dokument należy do konta).
+        body: JSON.stringify({ title, content, userId: user.id }),
       });
 
       if (!res.ok || !res.body) {
@@ -153,7 +158,9 @@ export default function UploadPage() {
     if (!ok) return;
 
     setDeleting(docTitle);
-    const { error } = await supabase.from("documents").delete().eq("title", docTitle);
+    // Filtr user_id: usuwamy tylko własny dokument.
+    const del = supabase.from("documents").delete().eq("title", docTitle);
+    const { error } = user ? await del.eq("user_id", user.id) : await del;
     setDeleting(null);
 
     if (error) {

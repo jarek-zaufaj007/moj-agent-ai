@@ -429,43 +429,50 @@ export const getNotes = tool({
 // Samo wyszukiwanie siedzi w app/lib/knowledge.ts — dzieli je z podglądem
 // bazy na stronie /knowledge.
 
-export const searchKnowledge = tool({
-  description:
-    "Wyszukuje informacje w bazie wiedzy firmy (cenniki, FAQ, regulaminy, oferty). " +
-    "Używaj ZAWSZE gdy użytkownik pyta o: ceny, pakiety, koszty; procedury, regulaminy, warunki; " +
-    "FAQ, pytania o firmę/usługi; cokolwiek co może być w dokumentach firmowych. " +
-    "Zwraca też source_documents — tytuły dokumentów, które MUSISZ zacytować w odpowiedzi.",
-  inputSchema: z.object({
-    query: z
-      .string()
-      .describe("Pytanie użytkownika, np. 'ile kosztuje pakiet premium'"),
-  }),
-  execute: async ({ query }) => {
-    if (!query || !query.trim()) {
-      return {
-        results: [],
-        total_found: 0,
-        source_documents: [],
-        message: "Puste pytanie.",
-      };
-    }
+// Fabryka narzędzia RAG powiązana z KONKRETNYM użytkownikiem — przeszukuje
+// TYLKO dokumenty jego konta (izolacja danych, Warsztat 3). userId leci do
+// searchKnowledgeBase, a stamtąd jako filter_user_id do funkcji match_documents.
+// Bez userId (np. konteksty bez logowania) przeszukuje całą bazę — dziś każdy
+// route jest za loginem, więc userId zawsze jest.
+export function createSearchKnowledge(userId?: string) {
+  return tool({
+    description:
+      "Wyszukuje informacje w bazie wiedzy firmy (cenniki, FAQ, regulaminy, oferty). " +
+      "Używaj ZAWSZE gdy użytkownik pyta o: ceny, pakiety, koszty; procedury, regulaminy, warunki; " +
+      "FAQ, pytania o firmę/usługi; cokolwiek co może być w dokumentach firmowych. " +
+      "Zwraca też source_documents — tytuły dokumentów, które MUSISZ zacytować w odpowiedzi.",
+    inputSchema: z.object({
+      query: z
+        .string()
+        .describe("Pytanie użytkownika, np. 'ile kosztuje pakiet premium'"),
+    }),
+    execute: async ({ query }) => {
+      if (!query || !query.trim()) {
+        return {
+          results: [],
+          total_found: 0,
+          source_documents: [],
+          message: "Puste pytanie.",
+        };
+      }
 
-    try {
-      return await searchKnowledgeBase(query);
-    } catch (err) {
-      console.error("searchKnowledge: błąd wyszukiwania.", err);
-      // Komunikat celowo mówi o BŁĘDZIE, a nie o braku wyników — inaczej agent
-      // odmówiłby odpowiedzi ("nie mam tego w bazie"), choć baza może tę
-      // informację mieć, tylko wyszukiwarka chwilowo nie odpowiada.
-      return {
-        results: [],
-        total_found: 0,
-        source_documents: [],
-        message: "Nie udało się przeszukać bazy wiedzy (błąd połączenia).",
-      };
-    }
-  },
-});
+      try {
+        return await searchKnowledgeBase(query, { userId });
+      } catch (err) {
+        console.error("searchKnowledge: błąd wyszukiwania.", err);
+        // Komunikat celowo mówi o BŁĘDZIE, a nie o braku wyników — inaczej agent
+        // odmówiłby odpowiedzi ("nie mam tego w bazie"), choć baza może tę
+        // informację mieć, tylko wyszukiwarka chwilowo nie odpowiada.
+        return {
+          results: [],
+          total_found: 0,
+          source_documents: [],
+          message: "Nie udało się przeszukać bazy wiedzy (błąd połączenia).",
+        };
+      }
+    },
+  });
+}
 
 // ── Profil użytkownika (personalizacja) ─────────────────────────────────────
 // Fabryka narzędzi powiązanych z KONKRETNYM użytkownikiem (userId).

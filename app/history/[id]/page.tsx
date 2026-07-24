@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/app/lib/auth";
 
 type Message = {
   id: string;
@@ -26,6 +27,7 @@ function timeLabel(iso: string): string {
 }
 
 export default function ConversationPreviewPage() {
+  const { user } = useAuth();
   const params = useParams<{ id: string }>();
   const id = params.id;
 
@@ -35,14 +37,16 @@ export default function ConversationPreviewPage() {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || !user) return;
     let cancelled = false;
 
     (async () => {
+      // Filtr user_id: podgląd tylko własnej rozmowy (cudze id → "nie znaleziono").
       const { data: conv } = await supabase
         .from("conversations")
         .select("id, title, updated_at")
         .eq("id", id)
+        .eq("user_id", user.id)
         .maybeSingle();
 
       if (!conv) {
@@ -69,7 +73,7 @@ export default function ConversationPreviewPage() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, user]);
 
   return (
     <div

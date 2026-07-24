@@ -17,9 +17,11 @@ const PREVIEW_COUNT = 8;
 
 export async function POST(req: Request) {
   let query: unknown;
+  let userId: unknown;
   try {
     const body = await req.json();
     query = body?.query;
+    userId = body?.userId;
   } catch {
     return Response.json({ error: "Nieprawidłowe dane wejściowe." }, { status: 400 });
   }
@@ -29,9 +31,11 @@ export async function POST(req: Request) {
   }
 
   try {
+    // Podgląd zawężony do dokumentów tego usera — to samo, co widzi agent.
     const search = await searchKnowledgeBase(query, {
       threshold: PREVIEW_THRESHOLD,
       count: PREVIEW_COUNT,
+      userId: typeof userId === "string" ? userId : undefined,
     });
 
     // agent_threshold jedzie do UI, żeby mogło oznaczyć, które fragmenty

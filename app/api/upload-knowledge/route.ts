@@ -21,10 +21,12 @@ type Progress =
 export async function POST(req: Request) {
   let title: string;
   let content: string;
+  let userId: string;
   try {
     const body = await req.json();
     title = body?.title;
     content = body?.content;
+    userId = body?.userId;
   } catch {
     return Response.json({ error: "Nieprawidłowe dane wejściowe." }, { status: 400 });
   }
@@ -34,6 +36,10 @@ export async function POST(req: Request) {
   }
   if (!content || typeof content !== "string" || !content.trim()) {
     return Response.json({ error: "Podaj treść dokumentu." }, { status: 400 });
+  }
+  // Bez user_id dokument byłby "sierotą" — nie przypisany do żadnego konta.
+  if (!userId || typeof userId !== "string") {
+    return Response.json({ error: "Brak identyfikatora użytkownika." }, { status: 401 });
   }
 
   const docTitle = title.trim();
@@ -66,6 +72,7 @@ export async function POST(req: Request) {
             title: docTitle,
             content: chunk,
             embedding,
+            user_id: userId,
             metadata: {
               source: docTitle,
               chunk_index: i,

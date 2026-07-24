@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/app/lib/auth";
 
 // Rozmowa wzbogacona o dane potrzebne na karcie (liczba wiadomości, podgląd).
 type ConversationCard = {
@@ -40,6 +41,7 @@ function shorten(text: string, max = 100): string {
 }
 
 export default function HistoryPage() {
+  const { user } = useAuth();
   const [conversations, setConversations] = useState<ConversationCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -47,13 +49,16 @@ export default function HistoryPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
 
   // Pobierz listę rozmów wraz z liczbą wiadomości i podglądem ostatniej.
+  // Tylko rozmowy zalogowanego użytkownika (filtr po user_id).
   useEffect(() => {
+    if (!user) return;
     let cancelled = false;
 
     (async () => {
       const { data: convs, error } = await supabase
         .from("conversations")
         .select("id, title, updated_at")
+        .eq("user_id", user.id)
         .order("updated_at", { ascending: false });
 
       if (error) {
@@ -97,7 +102,7 @@ export default function HistoryPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [user]);
 
   // Filtrowanie (bonus): szukaj w tytule LUB w podglądzie ostatniej wiadomości.
   const filtered = useMemo(() => {
@@ -118,8 +123,10 @@ export default function HistoryPage() {
 
     setDeleting(id);
     // Kasujemy wiadomości, a potem samą rozmowę (na wypadek braku ON DELETE CASCADE).
+    // Dodatkowy filtr user_id chroni przed usunięciem cudzej rozmowy.
     await supabase.from("messages").delete().eq("conversation_id", id);
-    const { error } = await supabase.from("conversations").delete().eq("id", id);
+    const del = supabase.from("conversations").delete().eq("id", id);
+    const { error } = user ? await del.eq("user_id", user.id) : await del;
     setDeleting(null);
 
     if (error) {

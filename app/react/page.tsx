@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Diagnostics } from "@/app/lib/diagnostics";
+import { useAuth } from "@/app/lib/auth";
 
 // Metadane narzędzi: emoji + etykieta.
 const TOOL_META: Record<string, { emoji: string; label: string }> = {
@@ -212,6 +213,7 @@ function messageSources(parts: Part[]) {
 const MAX_STEPS = 5;
 
 export default function ReactPage() {
+  const { user } = useAuth();
   const transport = useMemo(
     () => new DefaultChatTransport({ api: "/api/react" }),
     [],
@@ -241,7 +243,8 @@ export default function ReactPage() {
     if (!trimmed || isLoading) return;
     setStartedAt(Date.now());
     setElapsed(0);
-    sendMessage({ text: trimmed });
+    // userId → wyszukiwarka wiedzy w route zawęzi RAG do dokumentów tego konta.
+    sendMessage({ text: trimmed }, { body: { userId: user?.id } });
     setInput("");
   }
 

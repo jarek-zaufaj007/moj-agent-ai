@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Sidebar } from "@/app/lib/nav";
+import { AuthProvider, AppShell } from "@/app/lib/auth";
 
 export const metadata: Metadata = {
   title: "Mój Agent — centrum dowodzenia AI",
@@ -14,10 +14,11 @@ export default function RootLayout({
   return (
     <html lang="pl">
       <body>
-        <div className="app-shell">
-          <Sidebar />
-          <div className="content">{children}</div>
-        </div>
+        {/* AuthProvider trzyma sesję i pilnuje dostępu; AppShell dobiera layout
+            (login bez sidebara, reszta z sidebarem). */}
+        <AuthProvider>
+          <AppShell>{children}</AppShell>
+        </AuthProvider>
       </body>
     </html>
   );

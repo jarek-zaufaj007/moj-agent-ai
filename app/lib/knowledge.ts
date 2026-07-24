@@ -45,20 +45,26 @@ type MatchRow = {
 type SearchOptions = {
   threshold?: number;
   count?: number;
+  // Izolacja danych (Warsztat 3): zawęź wyszukiwanie do dokumentów tego usera.
+  // Brak wartości → cała baza (funkcja match_documents traktuje null jako "bez filtra").
+  userId?: string;
 };
 
 export async function searchKnowledgeBase(
   query: string,
-  { threshold = MATCH_THRESHOLD, count = MATCH_COUNT }: SearchOptions = {},
+  { threshold = MATCH_THRESHOLD, count = MATCH_COUNT, userId }: SearchOptions = {},
 ): Promise<KnowledgeSearch> {
   // Typ RETRIEVAL_QUERY (nie DOCUMENT) — Gemini inaczej koduje pytanie,
   // które szuka, niż dokument, który ma zostać znaleziony.
   const embedding = await embedText(query, "RETRIEVAL_QUERY");
 
+  // filter_user_id filtruje po user_id JESZCZE PRZED limitem match_count — inaczej
+  // top-N globalne mogłyby wypełnić się cudzymi fragmentami i wypchnąć nasze.
   const { data, error } = await supabase.rpc("match_documents", {
     query_embedding: embedding,
     match_threshold: threshold,
     match_count: count,
+    filter_user_id: userId ?? null,
   });
 
   if (error) throw new Error(`match_documents: ${error.message}`);

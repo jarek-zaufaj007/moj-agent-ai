@@ -2,9 +2,11 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/app/lib/auth";
 
 // Klikalne przykłady tematów raportu.
 const EXAMPLES = [
@@ -20,6 +22,14 @@ type Part = {
   url?: string;
   title?: string;
   input?: { url?: string; query?: string };
+};
+
+// Zapisany raport z bazy.
+type SavedReport = {
+  id: string;
+  title: string;
+  content: string;
+  created_at: string;
 };
 
 function messageText(parts: Part[]) {
@@ -65,19 +75,33 @@ function activity(parts: Part[]) {
 }
 
 export default function ReportPage() {
+  const { user } = useAuth();
   const transport = useMemo(
     () => new DefaultChatTransport({ api: "/api/report" }),
     [],
   );
   const { messages, sendMessage, status, setMessages } = useChat({ transport });
   const [input, setInput] = useState("");
+  const [topic, setTopic] = useState(""); // temat aktualnie generowanego raportu
   const [copied, setCopied] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // Zapis do bazy.
+  const [saving, setSaving] = useState(false);
+  const [savedId, setSavedId] = useState<string | null>(null); // id po zapisie
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Panel "Zapisane raporty".
+  const [saved, setSaved] = useState<SavedReport[]>([]);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [loaded, setLoaded] = useState<{ title: string; text: string } | null>(
+    null,
+  ); // raport otwarty z listy (zamiast świeżo wygenerowanego)
+
   const isLoading = status === "submitted" || status === "streaming";
 
-  // Ostatnia odpowiedź agenta = gotowy raport (pracujemy z jednym naraz).
-  const report = useMemo(() => {
+  // Raport ze strumienia (świeżo generowany) = ostatnia odpowiedź agenta.
+  const live = useMemo(() => {
     const last = [...messages].reverse().find((m) => m.role === "assistant");
     if (!last) return null;
     const parts = last.parts as Part[];
@@ -88,15 +112,47 @@ export default function ReportPage() {
     };
   }, [messages]);
 
+  // Co pokazujemy: otwarty z listy raport ma pierwszeństwo nad świeżym.
+  const display = loaded
+    ? { text: loaded.text, sources: [] as { url: string; title: string }[], acts: [] as string[] }
+    : live;
+
+  // Świeży raport można zapisać tylko raz i tylko gdy generowanie się skończyło.
+  const canSave =
+    !loaded && !!live?.text && !isLoading && !!user && savedId === null;
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  function generate(topic: string) {
-    const trimmed = topic.trim();
+  // Wczytaj listę zapisanych raportów zalogowanego użytkownika.
+  const loadSaved = useCallback(async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("reports")
+      .select("id, title, content, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+    if (error) {
+      console.error("Nie udało się wczytać zapisanych raportów.", error);
+      return;
+    }
+    setSaved((data ?? []) as SavedReport[]);
+  }, [user]);
+
+  useEffect(() => {
+    void loadSaved();
+  }, [loadSaved]);
+
+  function generate(t: string) {
+    const trimmed = t.trim();
     if (!trimmed || isLoading) return;
     setMessages([]); // jeden raport naraz — czyścimy poprzedni
+    setLoaded(null);
+    setSavedId(null);
+    setSaveError(null);
     setCopied(false);
+    setTopic(trimmed);
     sendMessage({ text: `Napisz profesjonalny raport na temat: ${trimmed}` });
     setInput("");
   }
@@ -107,9 +163,9 @@ export default function ReportPage() {
   }
 
   async function copyReport() {
-    if (!report?.text) return;
+    if (!display?.text) return;
     try {
-      await navigator.clipboard.writeText(report.text);
+      await navigator.clipboard.writeText(display.text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -118,14 +174,62 @@ export default function ReportPage() {
   }
 
   function downloadReport() {
-    if (!report?.text) return;
-    const blob = new Blob([report.text], { type: "text/markdown" });
+    if (!display?.text) return;
+    const blob = new Blob([display.text], { type: "text/markdown" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = "raport.md";
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  async function saveReport() {
+    if (!live?.text || !user || saving) return;
+    setSaving(true);
+    setSaveError(null);
+    const title = (topic || "Raport bez tytułu").slice(0, 200);
+    const { data, error } = await supabase
+      .from("reports")
+      .insert({ user_id: user.id, title, content: live.text })
+      .select("id, title, content, created_at")
+      .single();
+    setSaving(false);
+    if (error || !data) {
+      console.error("Nie udało się zapisać raportu.", error);
+      setSaveError("Nie udało się zapisać (sprawdź, czy tabela 'reports' istnieje).");
+      return;
+    }
+    setSavedId(data.id);
+    setSaved((prev) => [data as SavedReport, ...prev]);
+  }
+
+  function openSaved(r: SavedReport) {
+    setMessages([]);
+    setLoaded({ title: r.title, text: r.content });
+    setTopic(r.title);
+    setSavedId(r.id);
+    setSaveError(null);
+    setCopied(false);
+    setPanelOpen(false);
+  }
+
+  async function deleteSaved(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    const { error } = await supabase
+      .from("reports")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user!.id); // dodatkowy filtr — nie kasuj cudzego
+    if (error) {
+      console.error("Nie udało się usunąć raportu.", error);
+      return;
+    }
+    setSaved((prev) => prev.filter((r) => r.id !== id));
+    if (loaded && savedId === id) {
+      setLoaded(null);
+      setSavedId(null);
+    }
   }
 
   return (
@@ -149,7 +253,7 @@ export default function ReportPage() {
       {/* Formularz tematu */}
       <form
         onSubmit={handleSubmit}
-        style={{ display: "flex", gap: 8, paddingBottom: 12 }}
+        style={{ display: "flex", gap: 8, paddingBottom: 8 }}
       >
         <input
           value={input}
@@ -185,6 +289,91 @@ export default function ReportPage() {
         </button>
       </form>
 
+      {/* Pasek "Zapisane raporty" */}
+      <div style={{ paddingBottom: 12 }}>
+        <button
+          onClick={() => setPanelOpen((v) => !v)}
+          style={{
+            background: "transparent",
+            border: "1px solid #333",
+            borderRadius: 8,
+            color: "#ededed",
+            padding: "5px 12px",
+            fontSize: 13,
+            cursor: "pointer",
+          }}
+        >
+          📁 Zapisane raporty {saved.length > 0 ? `(${saved.length})` : ""}{" "}
+          {panelOpen ? "▲" : "▼"}
+        </button>
+
+        {panelOpen && (
+          <div
+            style={{
+              marginTop: 8,
+              border: "1px solid #333",
+              borderRadius: 10,
+              overflow: "hidden",
+            }}
+          >
+            {saved.length === 0 ? (
+              <div style={{ padding: "12px 14px", color: "#888", fontSize: 13 }}>
+                Brak zapisanych raportów. Wygeneruj raport i kliknij „💾 Zapisz w
+                bazie".
+              </div>
+            ) : (
+              saved.map((r) => (
+                <div
+                  key={r.id}
+                  onClick={() => openSaved(r)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "10px 14px",
+                    borderBottom: "1px solid #222",
+                    cursor: "pointer",
+                    background: savedId === r.id && loaded ? "#15151f" : "transparent",
+                  }}
+                >
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        fontSize: 14,
+                        color: "#ededed",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {r.title}
+                    </div>
+                    <div style={{ fontSize: 11, color: "#777" }}>
+                      {new Date(r.created_at).toLocaleString("pl-PL")}
+                    </div>
+                  </div>
+                  <button
+                    onClick={(e) => deleteSaved(r.id, e)}
+                    title="Usuń"
+                    style={{
+                      background: "transparent",
+                      border: "1px solid #3a2a2a",
+                      borderRadius: 6,
+                      color: "#f0a0a0",
+                      padding: "2px 8px",
+                      fontSize: 12,
+                      cursor: "pointer",
+                    }}
+                  >
+                    🗑
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
       <main
         style={{
           flex: 1,
@@ -196,7 +385,7 @@ export default function ReportPage() {
         }}
       >
         {/* Ekran startowy z przykładami */}
-        {messages.length === 0 && (
+        {messages.length === 0 && !loaded && (
           <div style={{ marginTop: 12 }}>
             <p style={{ color: "#888", textAlign: "center", marginBottom: 12 }}>
               Wybierz przykład lub wpisz własny temat:
@@ -233,9 +422,9 @@ export default function ReportPage() {
         )}
 
         {/* Ślad pracy agenta (co czyta / czego szuka) */}
-        {report?.acts && report.acts.length > 0 && (
+        {display?.acts && display.acts.length > 0 && (
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {report.acts.map((a, i) => (
+            {display.acts.map((a, i) => (
               <span
                 key={i}
                 style={{
@@ -255,10 +444,10 @@ export default function ReportPage() {
         )}
 
         {/* Gotowy raport */}
-        {report?.text && (
+        {display?.text && (
           <>
             {/* Pasek akcji */}
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
               <button
                 onClick={copyReport}
                 style={{
@@ -273,6 +462,31 @@ export default function ReportPage() {
               >
                 {copied ? "✅ Skopiowano!" : "📋 Kopiuj do schowka"}
               </button>
+
+              {/* Zapis do bazy — tylko dla świeżo wygenerowanego raportu */}
+              {!loaded && (
+                <button
+                  onClick={saveReport}
+                  disabled={!canSave || saving}
+                  style={{
+                    background: savedId ? "#1a2a1a" : "#1a1a2a",
+                    border: `1px solid ${savedId ? "#3a7a3a" : "#333"}`,
+                    borderRadius: 8,
+                    color: savedId ? "#9de89d" : "#ededed",
+                    padding: "6px 14px",
+                    fontSize: 13,
+                    cursor: !canSave || saving ? "not-allowed" : "pointer",
+                    opacity: !canSave && !savedId ? 0.5 : 1,
+                  }}
+                >
+                  {savedId
+                    ? "✅ Zapisano w bazie"
+                    : saving
+                      ? "⏳ Zapisuję..."
+                      : "💾 Zapisz w bazie"}
+                </button>
+              )}
+
               <button
                 onClick={downloadReport}
                 style={{
@@ -287,7 +501,28 @@ export default function ReportPage() {
               >
                 💾 Pobierz (.md)
               </button>
+
+              {loaded && (
+                <span style={{ fontSize: 12, color: "#888" }}>
+                  📁 Otwarty z bazy
+                </span>
+              )}
             </div>
+
+            {saveError && (
+              <div
+                style={{
+                  background: "#2a1a1a",
+                  border: "1px solid #a33",
+                  borderRadius: 10,
+                  color: "#f0b0b0",
+                  padding: "8px 12px",
+                  fontSize: 13,
+                }}
+              >
+                ⚠️ {saveError}
+              </div>
+            )}
 
             <article
               style={{
@@ -301,12 +536,12 @@ export default function ReportPage() {
             >
               <div className="markdown">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {report.text}
+                  {display.text}
                 </ReactMarkdown>
               </div>
             </article>
 
-            {report.sources.length > 0 && (
+            {display.sources.length > 0 && (
               <div
                 style={{
                   display: "flex",
@@ -318,7 +553,7 @@ export default function ReportPage() {
                 }}
               >
                 <span>🔗 Źródła (grounding):</span>
-                {report.sources.map((s, i) => (
+                {display.sources.map((s, i) => (
                   <a
                     key={s.url}
                     href={s.url}
@@ -335,7 +570,7 @@ export default function ReportPage() {
         )}
 
         {/* Wskaźnik pracy */}
-        {isLoading && !report?.text && (
+        {isLoading && !live?.text && (
           <div
             style={{
               alignSelf: "flex-start",

@@ -197,7 +197,16 @@ export default function ReportPage() {
     setSaving(false);
     if (error || !data) {
       console.error("Nie udało się zapisać raportu.", error);
-      setSaveError("Nie udało się zapisać (sprawdź, czy tabela 'reports' istnieje).");
+      // Pokaż PRAWDZIWĄ przyczynę z bazy — najczęściej RLS (42501: brak polityki
+      // zezwalającej na insert) albo brak tabeli (42P01). Bez tego diagnoza
+      // jest zgadywaniem.
+      const detail =
+        error?.code === "42501"
+          ? "brak polityki RLS na tabeli 'reports' — uruchom sekcję RLS z supabase/L08_W2_reports.sql."
+          : error?.code === "42P01"
+            ? "tabela 'reports' nie istnieje — uruchom migrację supabase/L08_W2_reports.sql."
+            : (error?.message ?? "nieznany błąd.");
+      setSaveError(`Nie udało się zapisać: ${detail}`);
       return;
     }
     setSavedId(data.id);

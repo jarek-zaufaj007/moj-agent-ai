@@ -21,9 +21,17 @@ create table if not exists reports (
 -- Filtrujemy i sortujemy listę po user_id — niech baza ma po czym szukać.
 create index if not exists reports_user_id_idx on reports (user_id, created_at desc);
 
--- ── 2. (Opcjonalnie) Row Level Security ─────────────────────────────────────
--- Aplikacja filtruje po user_id w kodzie. Chcesz twardą izolację nawet gdyby
--- ktoś uderzył prosto w API? Włącz RLS (zapytania muszą iść z tokenem usera):
--- alter table reports enable row level security;
--- create policy "own reports" on reports
---   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+-- ── 2. Row Level Security ───────────────────────────────────────────────────
+-- WAŻNE: jeśli tabela powstała przez Table Editor w Supabase, RLS jest ON
+-- domyślnie i BEZ tej polityki insert pada z błędem 42501
+-- ("new row violates row-level security policy"). Ta polityka pozwala
+-- zalogowanemu użytkownikowi zarządzać WYŁĄCZNIE własnymi raportami — klient
+-- aplikacji wysyła token usera, więc auth.uid() = właściciel, a zapis ustawia
+-- user_id = user.id (pasuje do with check). To twarda izolacja na poziomie bazy.
+alter table reports enable row level security;
+
+drop policy if exists "own reports" on reports;
+create policy "own reports" on reports
+  for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);

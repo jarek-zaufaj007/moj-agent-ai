@@ -21,6 +21,7 @@ const ROUTES = [
   { href: "/fewshot", emoji: "📚", label: "Słownik AI" },
   { href: "/format", emoji: "📐", label: "Formater" },
   { href: "/search", emoji: "🌐", label: "Szukaj" },
+  { href: "/report", emoji: "📊", label: "Raporty" },
   { href: "/generate", emoji: "🎨", label: "Grafiki" },
   { href: "/vision", emoji: "👁️", label: "Vision" },
 ];

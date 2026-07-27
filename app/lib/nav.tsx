@@ -22,6 +22,7 @@ const ROUTES = [
   { href: "/format", emoji: "📐", label: "Formater" },
   { href: "/search", emoji: "🌐", label: "Szukaj" },
   { href: "/report", emoji: "📊", label: "Raporty" },
+  { href: "/competitor", emoji: "🏢", label: "Konkurencja" },
   { href: "/generate", emoji: "🎨", label: "Grafiki" },
   { href: "/vision", emoji: "👁️", label: "Vision" },
 ];

@@ -94,14 +94,13 @@ export default function ReportPage() {
   // Panel "Zapisane raporty".
   const [saved, setSaved] = useState<SavedReport[]>([]);
   const [panelOpen, setPanelOpen] = useState(false);
-  const [loaded, setLoaded] = useState<{ title: string; text: string } | null>(
-    null,
-  ); // raport otwarty z listy (zamiast świeżo wygenerowanego)
+  // Raport otwarty w oknie szybkiego podglądu (modal). null = zamknięte.
+  const [preview, setPreview] = useState<SavedReport | null>(null);
 
   const isLoading = status === "submitted" || status === "streaming";
 
   // Raport ze strumienia (świeżo generowany) = ostatnia odpowiedź agenta.
-  const live = useMemo(() => {
+  const display = useMemo(() => {
     const last = [...messages].reverse().find((m) => m.role === "assistant");
     if (!last) return null;
     const parts = last.parts as Part[];
@@ -112,18 +111,22 @@ export default function ReportPage() {
     };
   }, [messages]);
 
-  // Co pokazujemy: otwarty z listy raport ma pierwszeństwo nad świeżym.
-  const display = loaded
-    ? { text: loaded.text, sources: [] as { url: string; title: string }[], acts: [] as string[] }
-    : live;
-
   // Świeży raport można zapisać tylko raz i tylko gdy generowanie się skończyło.
-  const canSave =
-    !loaded && !!live?.text && !isLoading && !!user && savedId === null;
+  const canSave = !!display?.text && !isLoading && !!user && savedId === null;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
+
+  // Zamknij podgląd klawiszem Esc.
+  useEffect(() => {
+    if (!preview) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPreview(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [preview]);
 
   // Wczytaj listę zapisanych raportów zalogowanego użytkownika.
   const loadSaved = useCallback(async () => {
@@ -148,7 +151,6 @@ export default function ReportPage() {
     const trimmed = t.trim();
     if (!trimmed || isLoading) return;
     setMessages([]); // jeden raport naraz — czyścimy poprzedni
-    setLoaded(null);
     setSavedId(null);
     setSaveError(null);
     setCopied(false);
@@ -185,13 +187,13 @@ export default function ReportPage() {
   }
 
   async function saveReport() {
-    if (!live?.text || !user || saving) return;
+    if (!display?.text || !user || saving) return;
     setSaving(true);
     setSaveError(null);
     const title = (topic || "Raport bez tytułu").slice(0, 200);
     const { data, error } = await supabase
       .from("reports")
-      .insert({ user_id: user.id, title, content: live.text })
+      .insert({ user_id: user.id, title, content: display.text })
       .select("id, title, content, created_at")
       .single();
     setSaving(false);
@@ -213,14 +215,27 @@ export default function ReportPage() {
     setSaved((prev) => [data as SavedReport, ...prev]);
   }
 
-  function openSaved(r: SavedReport) {
-    setMessages([]);
-    setLoaded({ title: r.title, text: r.content });
-    setTopic(r.title);
-    setSavedId(r.id);
-    setSaveError(null);
-    setCopied(false);
-    setPanelOpen(false);
+  // Skopiuj/pobierz treść z okna podglądu.
+  async function copyPreview() {
+    if (!preview) return;
+    try {
+      await navigator.clipboard.writeText(preview.content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  function downloadPreview() {
+    if (!preview) return;
+    const blob = new Blob([preview.content], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "raport.md";
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   async function deleteSaved(id: string, e: React.MouseEvent) {
@@ -235,10 +250,7 @@ export default function ReportPage() {
       return;
     }
     setSaved((prev) => prev.filter((r) => r.id !== id));
-    if (loaded && savedId === id) {
-      setLoaded(null);
-      setSavedId(null);
-    }
+    if (preview?.id === id) setPreview(null); // zamknij podgląd usuniętego
   }
 
   return (
@@ -334,7 +346,8 @@ export default function ReportPage() {
               saved.map((r) => (
                 <div
                   key={r.id}
-                  onClick={() => openSaved(r)}
+                  onClick={() => setPreview(r)}
+                  title="Kliknij, aby otworzyć podgląd"
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -342,7 +355,7 @@ export default function ReportPage() {
                     padding: "10px 14px",
                     borderBottom: "1px solid #222",
                     cursor: "pointer",
-                    background: savedId === r.id && loaded ? "#15151f" : "transparent",
+                    background: preview?.id === r.id ? "#15151f" : "transparent",
                   }}
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -394,7 +407,7 @@ export default function ReportPage() {
         }}
       >
         {/* Ekran startowy z przykładami */}
-        {messages.length === 0 && !loaded && (
+        {messages.length === 0 && (
           <div style={{ marginTop: 12 }}>
             <p style={{ color: "#888", textAlign: "center", marginBottom: 12 }}>
               Wybierz przykład lub wpisz własny temat:
@@ -472,29 +485,27 @@ export default function ReportPage() {
                 {copied ? "✅ Skopiowano!" : "📋 Kopiuj do schowka"}
               </button>
 
-              {/* Zapis do bazy — tylko dla świeżo wygenerowanego raportu */}
-              {!loaded && (
-                <button
-                  onClick={saveReport}
-                  disabled={!canSave || saving}
-                  style={{
-                    background: savedId ? "#1a2a1a" : "#1a1a2a",
-                    border: `1px solid ${savedId ? "#3a7a3a" : "#333"}`,
-                    borderRadius: 8,
-                    color: savedId ? "#9de89d" : "#ededed",
-                    padding: "6px 14px",
-                    fontSize: 13,
-                    cursor: !canSave || saving ? "not-allowed" : "pointer",
-                    opacity: !canSave && !savedId ? 0.5 : 1,
-                  }}
-                >
-                  {savedId
-                    ? "✅ Zapisano w bazie"
-                    : saving
-                      ? "⏳ Zapisuję..."
-                      : "💾 Zapisz w bazie"}
-                </button>
-              )}
+              {/* Zapis do bazy */}
+              <button
+                onClick={saveReport}
+                disabled={!canSave || saving}
+                style={{
+                  background: savedId ? "#1a2a1a" : "#1a1a2a",
+                  border: `1px solid ${savedId ? "#3a7a3a" : "#333"}`,
+                  borderRadius: 8,
+                  color: savedId ? "#9de89d" : "#ededed",
+                  padding: "6px 14px",
+                  fontSize: 13,
+                  cursor: !canSave || saving ? "not-allowed" : "pointer",
+                  opacity: !canSave && !savedId ? 0.5 : 1,
+                }}
+              >
+                {savedId
+                  ? "✅ Zapisano w bazie"
+                  : saving
+                    ? "⏳ Zapisuję..."
+                    : "💾 Zapisz w bazie"}
+              </button>
 
               <button
                 onClick={downloadReport}
@@ -510,12 +521,6 @@ export default function ReportPage() {
               >
                 💾 Pobierz (.md)
               </button>
-
-              {loaded && (
-                <span style={{ fontSize: 12, color: "#888" }}>
-                  📁 Otwarty z bazy
-                </span>
-              )}
             </div>
 
             {saveError && (
@@ -579,7 +584,7 @@ export default function ReportPage() {
         )}
 
         {/* Wskaźnik pracy */}
-        {isLoading && !live?.text && (
+        {isLoading && !display?.text && (
           <div
             style={{
               alignSelf: "flex-start",
@@ -596,6 +601,129 @@ export default function ReportPage() {
 
         <div ref={bottomRef} />
       </main>
+
+      {/* ── Okno szybkiego podglądu zapisanego raportu ──────────────────── */}
+      {preview && (
+        <div
+          onClick={() => setPreview(null)} // klik w tło zamyka
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.7)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+            zIndex: 200,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()} // klik w okno nie zamyka
+            style={{
+              background: "#0f0f17",
+              border: "1px solid #333",
+              borderRadius: 14,
+              width: "100%",
+              maxWidth: 760,
+              maxHeight: "88vh",
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
+            }}
+          >
+            {/* Nagłówek okna (przyklejony) */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                padding: "14px 18px",
+                borderBottom: "1px solid #262636",
+                flexShrink: 0,
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 600,
+                    color: "#ededed",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                  title={preview.title}
+                >
+                  📄 {preview.title}
+                </div>
+                <div style={{ fontSize: 11, color: "#777" }}>
+                  {new Date(preview.created_at).toLocaleString("pl-PL")}
+                </div>
+              </div>
+              <button
+                onClick={copyPreview}
+                style={{
+                  background: copied ? "#1a2a1a" : "#1a1a2a",
+                  border: `1px solid ${copied ? "#3a7a3a" : "#333"}`,
+                  borderRadius: 8,
+                  color: copied ? "#9de89d" : "#ededed",
+                  padding: "5px 10px",
+                  fontSize: 12,
+                  cursor: "pointer",
+                }}
+              >
+                {copied ? "✅" : "📋 Kopiuj"}
+              </button>
+              <button
+                onClick={downloadPreview}
+                style={{
+                  background: "#1a1a2a",
+                  border: "1px solid #333",
+                  borderRadius: 8,
+                  color: "#ededed",
+                  padding: "5px 10px",
+                  fontSize: 12,
+                  cursor: "pointer",
+                }}
+              >
+                💾 .md
+              </button>
+              <button
+                onClick={() => setPreview(null)}
+                aria-label="Zamknij"
+                style={{
+                  background: "transparent",
+                  border: "1px solid #333",
+                  borderRadius: 8,
+                  color: "#ededed",
+                  padding: "5px 10px",
+                  fontSize: 14,
+                  cursor: "pointer",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Treść — przewijana w dół */}
+            <div
+              style={{
+                overflowY: "auto",
+                padding: "18px 24px",
+                lineHeight: 1.6,
+                overflowWrap: "anywhere",
+              }}
+            >
+              <div className="markdown">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {preview.content}
+                </ReactMarkdown>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

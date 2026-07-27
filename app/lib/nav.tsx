@@ -10,6 +10,7 @@ import { useAuth } from "@/app/lib/auth";
 const ROUTES = [
   { href: "/", emoji: "🏠", label: "Dashboard" },
   { href: "/chat", emoji: "💬", label: "Chat" },
+  { href: "/email-triage", emoji: "📧", label: "E-mail Triage" },
   { href: "/history", emoji: "📜", label: "Historia" },
   { href: "/upload", emoji: "📚", label: "Baza wiedzy" },
   { href: "/knowledge", emoji: "🔍", label: "Podgląd bazy" },

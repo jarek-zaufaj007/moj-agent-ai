@@ -6,7 +6,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/lib/auth";
 
-// Pełna nawigacja — 14 stron. Dashboard 🏠 na górze.
+// Pełna nawigacja. Dashboard 🏠 na górze, panel bezpieczeństwa 🛡️ na dole.
 const ROUTES = [
   { href: "/", emoji: "🏠", label: "Dashboard" },
   { href: "/chat", emoji: "💬", label: "Chat" },
@@ -27,6 +27,7 @@ const ROUTES = [
   { href: "/briefings", emoji: "📰", label: "Briefingi" },
   { href: "/generate", emoji: "🎨", label: "Grafiki" },
   { href: "/vision", emoji: "👁️", label: "Vision" },
+  { href: "/admin/security", emoji: "🛡️", label: "Bezpieczeństwo" },
 ];
 
 function isActive(pathname: string, href: string) {

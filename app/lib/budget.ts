@@ -23,7 +23,10 @@ export const BUDGET_MESSAGE = `Dzienny limit tokenów (${DAILY_TOKEN_LIMIT / 100
 // odbity o 23:30 czekałby "do jutra" tylko pół godziny.
 const TZ = "Europe/Warsaw";
 
-function startOfToday(): string {
+// Eksportowane, bo panel bezpieczeństwa (Warsztat 4) musi liczyć "dziś"
+// dokładnie tak samo jak limit — inaczej user widziałby w panelu inną liczbę
+// tokenów niż tę, którą sprawdza checkBudget.
+export function startOfToday(): string {
   const now = new Date();
   // Ta sama chwila opisana wskazówkami zegara w Warszawie — różnica względem
   // now to dokładnie tyle, ile minęło od lokalnej północy.

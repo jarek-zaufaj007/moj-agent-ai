@@ -6,6 +6,7 @@ import {
   buildPersonalization,
   modelAttempts,
 } from "@/app/lib/persona";
+import { checkBudget, logUsage } from "@/app/lib/budget";
 
 export const maxDuration = 30;
 
@@ -44,6 +45,14 @@ export async function POST(req: Request) {
     return Response.json({ greeting: null });
   }
 
+  // Dzienny budżet tokenów (Warsztat 3): po wyczerpaniu limitu nie palimy go
+  // na powitanie. Cichy brak powitania, a nie "Wróć jutro" — komunikat i tak
+  // zobaczy przy pierwszej wiadomości, prosto z /api/chat.
+  const budget = await checkBudget(userId);
+  if (!budget.ok) {
+    return Response.json({ greeting: null });
+  }
+
   // Baza tożsamości zależy od tego, kto wita: Maja (czat) czy agent multi-tool.
   // Personalizację (imię, preferencje) dokładamy tak samo w obu przypadkach.
   const base = variant === "agent" ? AGENT_SYSTEM : SYSTEM;
@@ -52,13 +61,19 @@ export async function POST(req: Request) {
   let lastError: unknown;
   for (const modelId of modelAttempts(model)) {
     try {
-      const { text } = await generateText({
+      const { text, usage } = await generateText({
         model: google(modelId),
         system,
         prompt: GREETING_INSTRUCTION,
         stopWhen: stepCountIs(maxSteps),
         maxRetries: 0,
         abortSignal: AbortSignal.timeout(20000),
+      });
+      await logUsage({
+        userId,
+        model: modelId,
+        endpoint: "/api/greeting",
+        usage,
       });
       return Response.json({ greeting: text, model: modelId });
     } catch (err) {

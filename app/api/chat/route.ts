@@ -25,6 +25,7 @@ import {
   logMessage,
   sanitizeInput,
 } from "@/app/lib/guard";
+import { BUDGET_MESSAGE, checkBudget, logUsage } from "@/app/lib/budget";
 
 export const maxDuration = 30;
 
@@ -84,6 +85,12 @@ export async function POST(req: Request) {
       `Osiągnąłeś limit wiadomości (50/h). Spróbuj za ${rate.retryInMinutes} min.`,
     );
   }
+
+  // ── Warstwa 4: dzienny budżet tokenów (Warsztat 3) ────────────────────────
+  // Limit wiadomości pilnuje CZĘSTOTLIWOŚCI, budżet — KOSZTU. Sprawdzamy go
+  // przed wysłaniem czegokolwiek do modelu, bo to tam powstaje rachunek.
+  const budget = await checkBudget(userId);
+  if (!budget.ok) return refusal(BUDGET_MESSAGE);
 
   await logMessage({ userId, text: input.text });
 
@@ -146,6 +153,15 @@ export async function POST(req: Request) {
           // przejść do modelu zapasowego zamiast czekać na backoff (~40s).
           maxRetries: 0,
           abortSignal: AbortSignal.timeout(20000),
+          // Realne zużycie znamy dopiero po odpowiedzi — `usage` sumuje już
+          // wszystkie kroki (wywołania narzędzi też kosztują tokeny).
+          onFinish: ({ usage }) =>
+            void logUsage({
+              userId,
+              model: modelId,
+              endpoint: "/api/chat",
+              usage,
+            }),
         });
 
         try {

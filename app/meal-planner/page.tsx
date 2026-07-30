@@ -670,7 +670,8 @@ export default function MealPlannerPage() {
     setPlanBrief(brief);
     setPlanTitle(planTitleFrom(f));
 
-    sendMessage({ text: brief });
+    // userId leci do route'a, żeby budżet tokenów (L10 W3) wiedział, czyj to koszt.
+    sendMessage({ text: brief }, { body: { userId: user?.id } });
   }
 
   function handleSubmit(e: React.FormEvent) {

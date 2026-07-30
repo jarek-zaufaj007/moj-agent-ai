@@ -19,6 +19,7 @@ import {
   saveNote,
   getNotes,
 } from "@/app/lib/tools";
+import { checkBudget, logUsage, writeBudgetRefusal } from "@/app/lib/budget";
 
 export const maxDuration = 60;
 
@@ -112,6 +113,14 @@ export async function POST(req: Request) {
     onError: () =>
       "Wszystkie modele są chwilowo niedostępne (możliwy limit API). Spróbuj ponownie za chwilę.",
     execute: async ({ writer }) => {
+      // Dzienny budżet tokenów (Warsztat 3) — pętla ReAct potrafi zrobić kilka
+      // kroków na jedno pytanie, więc kontrola kosztu jest tu szczególnie ważna.
+      const budget = await checkBudget(userId);
+      if (!budget.ok) {
+        writeBudgetRefusal(writer);
+        return;
+      }
+
       let lastError: unknown;
 
       for (const modelId of MODELS) {
@@ -140,6 +149,13 @@ export async function POST(req: Request) {
           stopWhen: stepCountIs(maxSteps),
           maxRetries: 0,
           abortSignal: AbortSignal.timeout(50000),
+          onFinish: ({ usage }) =>
+            void logUsage({
+              userId,
+              model: modelId,
+              endpoint: "/api/react",
+              usage,
+            }),
         });
 
         try {

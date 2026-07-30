@@ -17,6 +17,7 @@ import {
   createProfileTools,
 } from "@/app/lib/tools";
 import { buildPersonalization } from "@/app/lib/persona";
+import { checkBudget, logUsage, writeBudgetRefusal } from "@/app/lib/budget";
 
 export const maxDuration = 60;
 
@@ -74,6 +75,15 @@ export async function POST(req: Request) {
     onError: () =>
       "Wszystkie modele są chwilowo niedostępne (możliwy limit API). Spróbuj ponownie za chwilę.",
     execute: async ({ writer }) => {
+      // Dzienny budżet tokenów (Warsztat 3) — zanim cokolwiek pójdzie do modelu.
+      // Agent multi-tool jest najdroższy: każdy krok narzędzia to osobne
+      // wywołanie LLM, a wynik narzędzia wraca do kontekstu.
+      const budget = await checkBudget(userId);
+      if (!budget.ok) {
+        writeBudgetRefusal(writer);
+        return;
+      }
+
       // Narzędzie generujące obraz — zdefiniowane w domknięciu, aby mieć dostęp
       // do writera i strumieniować gotowy obraz jako część data-image.
       // Do modelu wraca tylko krótki tekst (bez base64), by nie zapychać kontekstu.
@@ -126,6 +136,15 @@ export async function POST(req: Request) {
           // Bez ponawiania + limit czasu, żeby szybko przejść do modelu zapasowego.
           maxRetries: 0,
           abortSignal: AbortSignal.timeout(50000),
+          // `usage` sumuje wszystkie kroki pętli agenta — jeden wiersz
+          // w api_usage to koszt całej odpowiedzi.
+          onFinish: ({ usage }) =>
+            void logUsage({
+              userId,
+              model: modelId,
+              endpoint: "/api/agent",
+              usage,
+            }),
         });
 
         try {

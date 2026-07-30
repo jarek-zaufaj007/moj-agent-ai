@@ -155,7 +155,11 @@ export default function ReportPage() {
     setSaveError(null);
     setCopied(false);
     setTopic(trimmed);
-    sendMessage({ text: `Napisz profesjonalny raport na temat: ${trimmed}` });
+    // userId leci do route'a, żeby budżet tokenów (L10 W3) wiedział, czyj to koszt.
+    sendMessage(
+      { text: `Napisz profesjonalny raport na temat: ${trimmed}` },
+      { body: { userId: user?.id } },
+    );
     setInput("");
   }
 

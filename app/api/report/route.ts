@@ -8,6 +8,7 @@ import {
   type UIMessage,
 } from "ai";
 import { calculator, readWebPage, searchWikipedia } from "@/app/lib/tools";
+import { checkBudget, logUsage, writeBudgetRefusal } from "@/app/lib/budget";
 
 export const maxDuration = 60;
 
@@ -97,7 +98,8 @@ ZASADY:
 }
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  const { messages, userId }: { messages: UIMessage[]; userId?: string } =
+    await req.json();
 
   const modelMessages = await convertToModelMessages(messages);
   const system = buildSystem();
@@ -106,6 +108,14 @@ export async function POST(req: Request) {
     onError: () =>
       "Wszystkie modele są chwilowo niedostępne (możliwy limit API). Spróbuj ponownie za chwilę.",
     execute: async ({ writer }) => {
+      // Dzienny budżet tokenów (Warsztat 3) — raport to najdroższe wywołanie
+      // w całej aplikacji (długi output + kroki z wyszukiwaniem).
+      const budget = await checkBudget(userId);
+      if (!budget.ok) {
+        writeBudgetRefusal(writer);
+        return;
+      }
+
       let lastError: unknown;
 
       for (const modelId of MODELS) {
@@ -128,6 +138,13 @@ export async function POST(req: Request) {
           // Bez ponawiania + limit czasu, żeby szybko przejść do modelu zapasowego.
           maxRetries: 0,
           abortSignal: AbortSignal.timeout(55000),
+          onFinish: ({ usage }) =>
+            void logUsage({
+              userId,
+              model: modelId,
+              endpoint: "/api/report",
+              usage,
+            }),
         });
 
         try {

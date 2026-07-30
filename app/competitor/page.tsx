@@ -326,9 +326,11 @@ export default function CompetitorPage() {
     const ctxLine = (ctx ?? context).trim()
       ? `\n\nKontekst użytkownika: ${(ctx ?? context).trim()}`
       : "";
-    sendMessage({
-      text: `Porównaj następujące firmy: ${clean.join(", ")}.${ctxLine}`,
-    });
+    // userId leci do route'a, żeby budżet tokenów (L10 W3) wiedział, czyj to koszt.
+    sendMessage(
+      { text: `Porównaj następujące firmy: ${clean.join(", ")}.${ctxLine}` },
+      { body: { userId: user?.id } },
+    );
   }
 
   function handleSubmit(e: React.FormEvent) {

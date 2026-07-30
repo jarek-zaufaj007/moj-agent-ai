@@ -11,6 +11,9 @@ type Briefing = {
   content: string;
   date: string;
   created_at: string;
+  // 'cron' = automat o 7:00, 'manual' = przycisk "Wygeneruj teraz".
+  // Wiersze sprzed migracji L09_W4 dostają 'cron' z defaultu kolumny.
+  source: "cron" | "manual";
 };
 
 // Data utworzenia w ładnym polskim formacie: "wtorek, 28 lipca 2026 19:32".
@@ -47,12 +50,13 @@ export default function BriefingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState<Briefing | null>(null);
   const [copied, setCopied] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   // Pobierz 30 najnowszych briefingów (RLS: polityka "briefings public read").
   const load = useCallback(async () => {
     const { data, error } = await supabase
       .from("briefings")
-      .select("id, content, date, created_at")
+      .select("id, content, date, created_at, source")
       .order("created_at", { ascending: false })
       .limit(30);
 
@@ -60,7 +64,9 @@ export default function BriefingsPage() {
       setError(
         error.code === "PGRST205"
           ? "Tabela 'briefings' nie istnieje — uruchom migrację supabase/L09_W1_briefings.sql."
-          : "Nie udało się wczytać briefingów.",
+          : error.code === "42703"
+            ? "Brak kolumny 'source' — uruchom migrację supabase/L09_W4_briefings_source.sql."
+            : "Nie udało się wczytać briefingów.",
       );
     } else {
       setError(null);
@@ -73,10 +79,27 @@ export default function BriefingsPage() {
     load();
   }, [load]);
 
-  // Brak przycisku "Wygeneruj teraz" — /api/cron/morning wymaga nagłówka
-  // Authorization: Bearer $CRON_SECRET (patrz L09 W2), a sekretu nie wolno
-  // umieszczać w kodzie klienckim. Briefingi tworzy cron Vercela o 7:00 UTC;
-  // ręcznie odpalisz je curl-em z sekretem.
+  // "Wygeneruj teraz" NIE woła /api/cron/morning — tamten endpoint wymaga
+  // nagłówka Authorization: Bearer $CRON_SECRET (L09 W2), a sekretu nie wolno
+  // wysyłać do przeglądarki. Wołamy /api/briefings/generate, który po stronie
+  // serwera odpala tę samą logikę (app/lib/briefing.ts) bez sekretu.
+  async function generateNow() {
+    setGenerating(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/briefings/generate", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setError(data.error ?? "Nie udało się wygenerować briefingu.");
+      } else {
+        await load(); // odśwież listę — nowy briefing wskoczy na górę
+      }
+    } catch {
+      setError("Nie udało się połączyć z serwerem.");
+    }
+    setGenerating(false);
+  }
+
   async function copyContent(text: string) {
     try {
       await navigator.clipboard.writeText(text);
@@ -96,6 +119,13 @@ export default function BriefingsPage() {
             Automatyczne podsumowania dnia od Twojego agenta
           </p>
         </div>
+        <button
+          className="br-generate"
+          onClick={generateNow}
+          disabled={generating}
+        >
+          {generating ? "⏳ Generuję…" : "🔄 Wygeneruj teraz"}
+        </button>
       </div>
 
       {error && <div className="br-error">⚠️ {error}</div>}
@@ -106,6 +136,13 @@ export default function BriefingsPage() {
         <div className="br-empty">
           <div style={{ fontSize: 40 }}>🌙</div>
           <p>Brak briefingów. Cron job wygeneruje pierwszy jutro rano!</p>
+          <button
+            className="br-generate"
+            onClick={generateNow}
+            disabled={generating}
+          >
+            {generating ? "⏳ Generuję…" : "🔄 Wygeneruj teraz"}
+          </button>
         </div>
       ) : (
         <div className="br-list">
@@ -113,8 +150,16 @@ export default function BriefingsPage() {
             <button key={b.id} className="br-card" onClick={() => setOpen(b)}>
               <div className="br-card-date">{formatCreatedAt(b.created_at)}</div>
               <div className="br-card-preview">{preview(b.content)}</div>
-              <div className="br-card-status">
-                ✅ wygenerowany automatycznie
+              <div
+                className={
+                  b.source === "manual"
+                    ? "br-card-status br-manual"
+                    : "br-card-status"
+                }
+              >
+                {b.source === "manual"
+                  ? "👆 wygenerowany ręcznie"
+                  : "✅ automatycznie (cron)"}
               </div>
             </button>
           ))}
@@ -183,6 +228,25 @@ export default function BriefingsPage() {
           color: #8a8a9a;
           font-size: 14px;
         }
+        .br-generate {
+          background: #5b6cff;
+          border: none;
+          color: #fff;
+          border-radius: 10px;
+          padding: 10px 16px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: inherit;
+          white-space: nowrap;
+        }
+        .br-generate:hover:not(:disabled) {
+          background: #4a5aee;
+        }
+        .br-generate:disabled {
+          opacity: 0.6;
+          cursor: default;
+        }
         .br-error {
           background: #2a1a1a;
           border: 1px solid #5a2a2a;
@@ -231,7 +295,11 @@ export default function BriefingsPage() {
           font-weight: 600;
           font-size: 15px;
           margin-bottom: 6px;
-          text-transform: capitalize;
+        }
+        /* Tylko pierwsza litera z wielkiej — "capitalize" podniosłoby też nazwę
+           miesiąca ("30 Lipca"), a po polsku miesiące piszemy z małej. */
+        .br-card-date::first-letter {
+          text-transform: uppercase;
         }
         .br-card-preview {
           color: #b5b5c5;
@@ -242,6 +310,10 @@ export default function BriefingsPage() {
         .br-card-status {
           font-size: 12px;
           color: #6ecf9a;
+        }
+        /* Ręczny briefing na niebiesko — w kolorze przycisku, który go stworzył. */
+        .br-card-status.br-manual {
+          color: #8b9aff;
         }
         .br-modal-bg {
           position: fixed;
@@ -283,7 +355,9 @@ export default function BriefingsPage() {
           color: #8a8a9a;
           font-size: 13px;
           margin: 4px 0 8px;
-          text-transform: capitalize;
+        }
+        .br-modal-date::first-letter {
+          text-transform: uppercase;
         }
         .br-chip {
           background: #1a1a26;

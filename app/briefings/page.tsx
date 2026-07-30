@@ -16,41 +16,54 @@ type Briefing = {
   source: "cron" | "manual";
 };
 
-// Data utworzenia w ładnym polskim formacie: "wtorek, 28 lipca 2026 19:32".
-function formatCreatedAt(iso: string): string {
-  const d = new Date(iso);
-  const date = new Intl.DateTimeFormat("pl-PL", {
-    weekday: "long",
+// Nagłówek karty i panelu: "28 lipca 2026, wtorek".
+function formatDateLabel(iso: string): string {
+  return new Intl.DateTimeFormat("pl-PL", {
     day: "numeric",
     month: "long",
     year: "numeric",
+    weekday: "long",
     timeZone: "Europe/Warsaw",
-  }).format(d);
-  const time = new Intl.DateTimeFormat("pl-PL", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Europe/Warsaw",
-  }).format(d);
-  return `${date} ${time}`;
+  })
+    .format(new Date(iso))
+    // Intl daje "wtorek, 28 lipca 2026" — przestawiamy, żeby data była pierwsza.
+    .split(", ")
+    .reverse()
+    .join(", ");
 }
 
-// Krótki podgląd na kartę — usuwamy znaczniki markdown i bierzemy ~150 znaków.
+// Drobny podpis w panelu: "28.07.2026, 19:54".
+function formatGenerated(iso: string): string {
+  return new Intl.DateTimeFormat("pl-PL", {
+    dateStyle: "short",
+    timeStyle: "short",
+    timeZone: "Europe/Warsaw",
+  }).format(new Date(iso));
+}
+
+// Krótki podgląd na kartę — usuwamy znaczniki markdown i bierzemy ~110 znaków
+// (węższa kolumna niż w poprzednim układzie jednokolumnowym).
 function preview(content: string): string {
   const plain = content
     .replace(/^#+\s*/gm, "") // nagłówki
     .replace(/[*_`>#-]/g, "") // pozostałe znaki markdown
     .replace(/\s+/g, " ")
     .trim();
-  return plain.length > 150 ? plain.slice(0, 150) + "…" : plain;
+  return plain.length > 110 ? plain.slice(0, 110) + "…" : plain;
 }
 
 export default function BriefingsPage() {
   const [briefings, setBriefings] = useState<Briefing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [open, setOpen] = useState<Briefing | null>(null);
   const [copied, setCopied] = useState(false);
   const [generating, setGenerating] = useState(false);
+  // Wybrana pozycja listy. null = "nic nie kliknięto", wtedy pokazujemy
+  // najnowszy briefing — strona nigdy nie startuje z pustym panelem.
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const selected =
+    briefings.find((b) => b.id === selectedId) ?? briefings[0] ?? null;
 
   // Pobierz 30 najnowszych briefingów (RLS: polityka "briefings public read").
   const load = useCallback(async () => {
@@ -93,6 +106,7 @@ export default function BriefingsPage() {
         setError(data.error ?? "Nie udało się wygenerować briefingu.");
       } else {
         await load(); // odśwież listę — nowy briefing wskoczy na górę
+        setSelectedId(null); // …i od razu pokaż go w panelu (fallback = [0])
       }
     } catch {
       setError("Nie udało się połączyć z serwerem.");
@@ -145,68 +159,79 @@ export default function BriefingsPage() {
           </button>
         </div>
       ) : (
-        <div className="br-list">
-          {briefings.map((b) => (
-            <button key={b.id} className="br-card" onClick={() => setOpen(b)}>
-              <div className="br-card-date">{formatCreatedAt(b.created_at)}</div>
-              <div className="br-card-preview">{preview(b.content)}</div>
-              <div
-                className={
-                  b.source === "manual"
-                    ? "br-card-status br-manual"
-                    : "br-card-status"
-                }
-              >
-                {b.source === "manual"
-                  ? "👆 wygenerowany ręcznie"
-                  : "✅ automatycznie (cron)"}
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
+        // Układ master-detail: lista po lewej, treść wybranego po prawej.
+        // Na wąskim ekranie kolumny składają się jedna pod drugą (media query).
+        <div className="br-split">
+          <aside className="br-side">
+            <div className="br-side-head">
+              <span>Twoje briefingi</span>
+              <span className="br-count">{briefings.length}</span>
+            </div>
+            <div className="br-list">
+              {briefings.map((b) => (
+                <button
+                  key={b.id}
+                  className={
+                    b.id === selected?.id ? "br-card br-card-active" : "br-card"
+                  }
+                  aria-current={b.id === selected?.id}
+                  onClick={() => setSelectedId(b.id)}
+                >
+                  <div className="br-card-date">
+                    {formatDateLabel(b.created_at)}
+                  </div>
+                  <div className="br-card-preview">{preview(b.content)}</div>
+                  <div
+                    className={
+                      b.source === "manual"
+                        ? "br-card-status br-manual"
+                        : "br-card-status"
+                    }
+                  >
+                    {b.source === "manual"
+                      ? "👆 wygenerowany ręcznie"
+                      : "✅ automatycznie (cron)"}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </aside>
 
-      {/* Podgląd pełnego briefingu — renderowany markdown, jak na dashboardzie. */}
-      {open && (
-        <div className="br-modal-bg" onClick={() => setOpen(null)}>
-          <div
-            className="br-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Podgląd briefingu"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="br-modal-head">
-              <div className="br-modal-badge">PORANNY BRIEFING</div>
-              <div className="br-modal-actions">
-                <button
-                  className="br-chip"
-                  onClick={() => copyContent(open.content)}
-                >
-                  {copied ? "✓ Skopiowano" : "📋 Kopiuj"}
-                </button>
-                <button
-                  className="br-chip"
-                  onClick={() => setOpen(null)}
-                  aria-label="Zamknij"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-            <div className="br-modal-date">{formatCreatedAt(open.created_at)}</div>
-            <div className="markdown br-modal-body">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {open.content}
-              </ReactMarkdown>
-            </div>
-          </div>
+          {/* Panel treści — renderowany markdown, jak na dashboardzie. */}
+          <section className="br-detail">
+            {selected && (
+              <>
+                <div className="br-detail-head">
+                  <div>
+                    <div className="br-detail-date">
+                      {formatDateLabel(selected.created_at)}
+                    </div>
+                    <div className="br-detail-meta">
+                      Wygenerowano {formatGenerated(selected.created_at)}
+                      {selected.source === "manual" ? " (ręcznie)" : " (cron)"}
+                    </div>
+                  </div>
+                  <button
+                    className="br-chip"
+                    onClick={() => copyContent(selected.content)}
+                  >
+                    {copied ? "✓ Skopiowano" : "📋 Kopiuj"}
+                  </button>
+                </div>
+                <div className="markdown br-detail-body">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {selected.content}
+                  </ReactMarkdown>
+                </div>
+              </>
+            )}
+          </section>
         </div>
       )}
 
       <style jsx>{`
         .br-wrap {
-          max-width: 820px;
+          max-width: 1180px;
           margin: 0 auto;
           padding: 8px 4px 40px;
         }
@@ -271,29 +296,69 @@ export default function BriefingsPage() {
           align-items: center;
           gap: 12px;
         }
+        /* 340px na listę, reszta na treść. */
+        .br-split {
+          display: grid;
+          grid-template-columns: 340px minmax(0, 1fr);
+          gap: 20px;
+          align-items: start;
+        }
+        .br-side {
+          /* Lista jedzie z ekranem, żeby przy długim briefingu dało się
+             przeskoczyć na inny dzień bez scrollowania w górę. */
+          position: sticky;
+          top: 16px;
+          max-height: calc(100vh - 48px);
+          display: flex;
+          flex-direction: column;
+        }
+        .br-side-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 14px;
+          font-weight: 600;
+          color: #c5c5d5;
+          padding: 0 4px 10px;
+        }
+        .br-count {
+          background: #1a1a26;
+          border: 1px solid #2c2c42;
+          border-radius: 999px;
+          min-width: 24px;
+          padding: 2px 8px;
+          text-align: center;
+          font-size: 12px;
+          color: #8a8a9a;
+        }
         .br-list {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 10px;
+          overflow-y: auto;
+          padding-right: 4px;
         }
         .br-card {
           text-align: left;
           background: #14141c;
           border: 1px solid #23233a;
           border-radius: 14px;
-          padding: 16px 18px;
+          padding: 14px 16px;
           cursor: pointer;
-          transition: border-color 0.15s, transform 0.15s;
+          transition: border-color 0.15s, background 0.15s;
           font: inherit;
           color: inherit;
         }
         .br-card:hover {
+          border-color: #3a3a5a;
+        }
+        .br-card-active {
           border-color: #5b6cff;
-          transform: translateY(-1px);
+          background: #191933;
         }
         .br-card-date {
           font-weight: 600;
-          font-size: 15px;
+          font-size: 14px;
           margin-bottom: 6px;
         }
         /* Tylko pierwsza litera z wielkiej — "capitalize" podniosłoby też nazwę
@@ -303,9 +368,9 @@ export default function BriefingsPage() {
         }
         .br-card-preview {
           color: #b5b5c5;
-          font-size: 14px;
+          font-size: 13px;
           line-height: 1.5;
-          margin-bottom: 10px;
+          margin-bottom: 8px;
         }
         .br-card-status {
           font-size: 12px;
@@ -315,49 +380,33 @@ export default function BriefingsPage() {
         .br-card-status.br-manual {
           color: #8b9aff;
         }
-        .br-modal-bg {
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.6);
-          display: flex;
-          align-items: flex-start;
-          justify-content: center;
-          padding: 40px 16px;
-          overflow-y: auto;
-          z-index: 50;
-        }
-        .br-modal {
+        .br-detail {
           background: #0f0f18;
           border: 1px solid #23233a;
           border-radius: 18px;
-          padding: 24px 26px 28px;
-          max-width: 680px;
-          width: 100%;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+          padding: 22px 26px 28px;
+          min-width: 0; /* bez tego długi kod/tabela rozpycha grid */
         }
-        .br-modal-head {
+        .br-detail-head {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           justify-content: space-between;
           gap: 12px;
+          border-bottom: 1px solid #1e1e2e;
+          padding-bottom: 14px;
+          margin-bottom: 6px;
         }
-        .br-modal-badge {
-          font-size: 12px;
-          letter-spacing: 0.12em;
-          font-weight: 700;
-          color: #7b8cff;
+        .br-detail-date {
+          font-weight: 600;
+          font-size: 15px;
         }
-        .br-modal-actions {
-          display: flex;
-          gap: 8px;
-        }
-        .br-modal-date {
-          color: #8a8a9a;
-          font-size: 13px;
-          margin: 4px 0 8px;
-        }
-        .br-modal-date::first-letter {
+        .br-detail-date::first-letter {
           text-transform: uppercase;
+        }
+        .br-detail-meta {
+          color: #8a8a9a;
+          font-size: 12px;
+          margin-top: 3px;
         }
         .br-chip {
           background: #1a1a26;
@@ -368,12 +417,28 @@ export default function BriefingsPage() {
           font-size: 13px;
           cursor: pointer;
           font: inherit;
+          white-space: nowrap;
         }
         .br-chip:hover {
           border-color: #5b6cff;
         }
-        .br-modal-body {
+        .br-detail-body {
           margin-top: 8px;
+        }
+
+        /* Wąski ekran: kolumny jedna pod drugą, lista przestaje być sticky
+           (inaczej przykleiłaby się nad treścią i zjadła pół ekranu). */
+        @media (max-width: 900px) {
+          .br-split {
+            grid-template-columns: 1fr;
+          }
+          .br-side {
+            position: static;
+            max-height: none;
+          }
+          .br-list {
+            overflow-y: visible;
+          }
         }
       `}</style>
     </div>

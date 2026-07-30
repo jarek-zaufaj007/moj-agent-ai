@@ -1,6 +1,11 @@
 import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
-import { getWeather, getExchangeRate, currentDateTime } from "@/app/lib/tools";
+import {
+  getWeather,
+  getExchangeRate,
+  currentDateTime,
+  getTopNews,
+} from "@/app/lib/tools";
 // Briefing powstaje bez zalogowanego usera (cron albo ręczne "Wygeneruj teraz"),
 // więc piszemy kluczem service_role (omija RLS) zamiast anon insert.
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
@@ -28,6 +33,8 @@ type WeatherResult =
   | { error: string };
 type RateResult = { rate: number; date: string } | { error: string };
 type DateResult = { datetime: string; iso: string };
+type NewsItem = { title: string; source: string; url: string };
+type NewsResult = { news: NewsItem[] } | { error: string };
 
 export type BriefingResult =
   | { ok: true; date: string; content: string }
@@ -51,6 +58,24 @@ function line(label: string, value: string): string {
   return `${label}: ${value}`;
 }
 
+// Znacznik, w który wstawiamy sekcję wiadomości JUŻ PO wygenerowaniu tekstu.
+// Dlaczego nie dajemy modelowi linków do przepisania: URL-e z Google News to
+// ~250 znaków base64 — model regularnie by je obcinał albo zmyślał, a wtedy
+// briefing miałby martwe linki. Kod skleja je deterministycznie.
+const NEWS_MARKER = "<!--NEWS-->";
+
+// Sekcja wiadomości jako gotowy markdown (albo informacja o niedostępności).
+function newsSection(result: NewsResult): string {
+  const head = "## 📰 Najważniejsze wiadomości";
+  if ("error" in result) {
+    return `${head}\n\n_Nie udało się pobrać wiadomości (${result.error})_`;
+  }
+  const items = result.news
+    .map((n) => `- [${n.title}](${n.url}) — *${n.source}*`)
+    .join("\n");
+  return `${head}\n\n${items}`;
+}
+
 const SYSTEM = `Jesteś osobistym asystentem. Napisz poranny briefing w formacie:
 
 # ☀️ Dzień dobry! Twój briefing na [data]
@@ -62,6 +87,8 @@ const SYSTEM = `Jesteś osobistym asystentem. Napisz poranny briefing w formacie
 - EUR: [kurs] PLN
 - USD: [kurs] PLN
 
+${NEWS_MARKER}
+
 ## 📅 Dzisiejszy dzień
 - Dzień tygodnia: [...]
 - Uwagi: [czy dziś święto? dzień wolny?]
@@ -70,7 +97,11 @@ const SYSTEM = `Jesteś osobistym asystentem. Napisz poranny briefing w formacie
 [Krótka, pozytywna porada na dzień]
 
 Pisz po polsku, ciepło i zwięźle. Używaj WYŁĄCZNIE danych podanych poniżej —
-nie zmyślaj temperatur ani kursów. Zwróć sam briefing w Markdown, bez komentarzy.`;
+nie zmyślaj temperatur ani kursów. Zwróć sam briefing w Markdown, bez komentarzy.
+
+WAŻNE: linię ${NEWS_MARKER} przepisz DOKŁADNIE tak jak wyżej, w osobnym wierszu.
+Nie pisz sam sekcji z wiadomościami i nie zmyślaj nagłówków — sekcja zostanie
+wstawiona w to miejsce automatycznie.`;
 
 /**
  * Zbiera aktualne dane (pogoda, kursy, data), generuje briefing przez AI
@@ -85,12 +116,13 @@ export async function generateMorningBriefing(
   const date = todayISO();
 
   // 1-3. Zbierz aktualne dane przez narzędzia z L04 (równolegle — niezależne).
-  const [weather, eur, usd, now] = (await Promise.all([
+  const [weather, eur, usd, now, news] = (await Promise.all([
     getWeather.execute!({ city: CITY }, toolOpts),
     getExchangeRate.execute!({ currency: "EUR" }, toolOpts),
     getExchangeRate.execute!({ currency: "USD" }, toolOpts),
     currentDateTime.execute!({}, toolOpts),
-  ])) as [WeatherResult, RateResult, RateResult, DateResult];
+    getTopNews.execute!({ limit: 5 }, toolOpts),
+  ])) as [WeatherResult, RateResult, RateResult, DateResult, NewsResult];
 
   // Złóż surowe dane w czytelny blok dla modelu.
   const weatherText =
@@ -120,7 +152,14 @@ export async function generateMorningBriefing(
       maxRetries: 1,
       abortSignal: AbortSignal.timeout(25000),
     });
-    content = text.trim();
+    // Wstaw sekcję wiadomości w miejsce znacznika. Jeśli model go zgubił
+    // (zdarza się), doklejamy sekcję na końcu — briefing nigdy nie traci
+    // newsów przez kaprys modelu, a znacznik nie wycieka do treści.
+    const section = newsSection(news);
+    content = text.includes(NEWS_MARKER)
+      ? text.replace(NEWS_MARKER, section)
+      : `${text.trim()}\n\n${section}`;
+    content = content.trim();
   } catch (err) {
     console.error("briefing: nie udało się wygenerować briefingu.", err);
     return {

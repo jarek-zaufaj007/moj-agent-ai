@@ -295,6 +295,75 @@ export const getExchangeRate = tool({
   },
 });
 
+// ── Najważniejsze wiadomości (Google News RSS, darmowe, bez klucza) ─────────
+// Zamiana encji HTML na znaki — tytuły w RSS przychodzą jako "Tusk &quot;X&quot;".
+function decodeEntities(s: string): string {
+  return s
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&"); // na końcu, inaczej rozbiłoby powyższe
+}
+
+export const getTopNews = tool({
+  description:
+    "Pobiera najważniejsze wiadomości dnia z Google News (polskie wydanie). Używaj do pytań o aktualne newsy, co się dzieje w kraju i na świecie.",
+  inputSchema: z.object({
+    limit: z
+      .number()
+      .optional()
+      .describe("Ile nagłówków zwrócić (domyślnie 5, maksymalnie 10)"),
+  }),
+  execute: async ({ limit }) => {
+    const count = Math.min(Math.max(limit ?? 5, 1), 10);
+    try {
+      const res = await fetchWithTimeout(
+        "https://news.google.com/rss?hl=pl&gl=PL&ceid=PL:pl",
+        // Bez User-Agenta Google potrafi oddać pustą odpowiedź.
+        { headers: { "user-agent": "Mozilla/5.0 (compatible; moj-agent/1.0)" } },
+      );
+      if (!res.ok) {
+        return { error: `Google News zwróciło błąd ${res.status}.` };
+      }
+      const xml = await res.text();
+
+      // Prosty parser RSS regexem — feed ma płaską, stałą strukturę
+      // <item><title>…</title><link>…</link>, więc nie wciągamy zależności XML.
+      const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)]
+        .map((m) => {
+          const title = m[1].match(/<title>([\s\S]*?)<\/title>/)?.[1] ?? "";
+          const url = m[1].match(/<link>([\s\S]*?)<\/link>/)?.[1] ?? "";
+          // Google News składa tytuł jako "Nagłówek - Źródło" — rozdzielamy po
+          // OSTATNIM " - ", bo sam nagłówek często zawiera myślniki.
+          const clean = decodeEntities(title).trim();
+          const cut = clean.lastIndexOf(" - ");
+          return {
+            title: cut > 0 ? clean.slice(0, cut) : clean,
+            source: cut > 0 ? clean.slice(cut + 3) : "Google News",
+            url: decodeEntities(url).trim(),
+          };
+        })
+        .filter((n) => n.title && n.url)
+        .slice(0, count);
+
+      if (items.length === 0) {
+        return { error: "Google News nie zwróciło żadnych wiadomości." };
+      }
+      return { news: items, source: "Google News" };
+    } catch (err) {
+      return {
+        error: networkErrorMessage(
+          err,
+          "Nie udało się pobrać wiadomości (błąd połączenia).",
+        ),
+      };
+    }
+  },
+});
+
 // ── Święta państwowe (Nager.Date, darmowe, bez klucza) ──────────────────────
 export const getHolidays = tool({
   description:

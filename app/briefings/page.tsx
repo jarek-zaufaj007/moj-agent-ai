@@ -44,7 +44,6 @@ function preview(content: string): string {
 export default function BriefingsPage() {
   const [briefings, setBriefings] = useState<Briefing[]>([]);
   const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState<Briefing | null>(null);
   const [copied, setCopied] = useState(false);
@@ -74,25 +73,10 @@ export default function BriefingsPage() {
     load();
   }, [load]);
 
-  // "🔄 Wygeneruj teraz" — ręcznie odpala endpoint crona, potem odświeża listę.
-  async function generateNow() {
-    setGenerating(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/cron/morning");
-      const json = await res.json();
-      if (!json.success) {
-        setError(json.error ?? "Nie udało się wygenerować briefingu.");
-      } else {
-        await load();
-      }
-    } catch {
-      setError("Nie udało się połączyć z endpointem /api/cron/morning.");
-    } finally {
-      setGenerating(false);
-    }
-  }
-
+  // Brak przycisku "Wygeneruj teraz" — /api/cron/morning wymaga nagłówka
+  // Authorization: Bearer $CRON_SECRET (patrz L09 W2), a sekretu nie wolno
+  // umieszczać w kodzie klienckim. Briefingi tworzy cron Vercela o 7:00 UTC;
+  // ręcznie odpalisz je curl-em z sekretem.
   async function copyContent(text: string) {
     try {
       await navigator.clipboard.writeText(text);
@@ -112,13 +96,6 @@ export default function BriefingsPage() {
             Automatyczne podsumowania dnia od Twojego agenta
           </p>
         </div>
-        <button
-          className="br-generate"
-          onClick={generateNow}
-          disabled={generating}
-        >
-          {generating ? "⏳ Generuję…" : "🔄 Wygeneruj teraz"}
-        </button>
       </div>
 
       {error && <div className="br-error">⚠️ {error}</div>}
@@ -129,13 +106,6 @@ export default function BriefingsPage() {
         <div className="br-empty">
           <div style={{ fontSize: 40 }}>🌙</div>
           <p>Brak briefingów. Cron job wygeneruje pierwszy jutro rano!</p>
-          <button
-            className="br-generate"
-            onClick={generateNow}
-            disabled={generating}
-          >
-            {generating ? "⏳ Generuję…" : "🔄 Wygeneruj teraz"}
-          </button>
         </div>
       ) : (
         <div className="br-list">
@@ -212,21 +182,6 @@ export default function BriefingsPage() {
           margin: 0;
           color: #8a8a9a;
           font-size: 14px;
-        }
-        .br-generate {
-          background: linear-gradient(135deg, #5b6cff, #7b5bff);
-          color: #fff;
-          border: none;
-          border-radius: 10px;
-          padding: 10px 16px;
-          font-size: 14px;
-          font-weight: 600;
-          cursor: pointer;
-          white-space: nowrap;
-        }
-        .br-generate:disabled {
-          opacity: 0.6;
-          cursor: default;
         }
         .br-error {
           background: #2a1a1a;

@@ -19,10 +19,19 @@ import { Sidebar } from "@/app/lib/nav";
 // - AppShell decyduje o layoucie: /login bez sidebara, reszta z sidebarem.
 
 // Ścieżki dostępne bez logowania. Wszystko inne jest chronione.
-const PUBLIC_PATHS = ["/login"];
+// "/" jest publiczne, bo niezalogowanemu pokazuje landing page (Lekcja 11),
+// a zalogowanemu — dashboard (przełącznik siedzi w app/page.tsx).
+const PUBLIC_PATHS = ["/", "/login"];
+
+// Trasy tylko dla gościa: zalogowany nie ma tu czego szukać → wracamy na "/".
+const GUEST_ONLY_PATHS = ["/login"];
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.includes(pathname);
+}
+
+function isGuestOnlyPath(pathname: string): boolean {
+  return GUEST_ONLY_PATHS.includes(pathname);
 }
 
 type AuthState = {
@@ -97,13 +106,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Strażnik tras: niezalogowany → /login, zalogowany na /login → dashboard.
+  // Strażnik tras: niezalogowany na chronionej trasie → /login,
+  // zalogowany na /login → dashboard. Publiczne "/" przepuszczamy w obie strony.
   useEffect(() => {
     if (loading) return;
-    const onPublic = isPublicPath(pathname);
-    if (!user && !onPublic) {
+    if (!user && !isPublicPath(pathname)) {
       router.replace("/login");
-    } else if (user && onPublic) {
+    } else if (user && isGuestOnlyPath(pathname)) {
       router.replace("/");
     }
   }, [loading, user, pathname, router]);
@@ -117,22 +126,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 // Powłoka aplikacji — o layoucie decyduje stan logowania:
 // - dopóki sprawdzamy sesję → spinner,
-// - niezalogowany na /login → sama strona logowania (bez sidebara),
+// - niezalogowany na trasie publicznej (/, /login) → sama strona, bez sidebara
+//   (landing i logowanie mają własny, pełnoekranowy układ),
 // - niezalogowany gdzie indziej → spinner (trwa redirect na /login),
 // - zalogowany → pełny układ z sidebarem.
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const pathname = usePathname();
-  const onPublic = isPublicPath(pathname);
 
   if (loading) {
     return <FullscreenSpinner label="Sprawdzam sesję…" />;
   }
 
   if (!user) {
-    // Niezalogowany: pokaż stronę publiczną (login) bez powłoki; na chronionej
-    // trasie trwa już przekierowanie na /login.
-    return onPublic ? (
+    // Niezalogowany: pokaż stronę publiczną bez powłoki; na chronionej trasie
+    // trwa już przekierowanie na /login.
+    return isPublicPath(pathname) ? (
       <>{children}</>
     ) : (
       <FullscreenSpinner label="Przekierowuję do logowania…" />
@@ -140,7 +149,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   // Zalogowany, ale na /login → przekierowanie na dashboard w toku.
-  if (onPublic) {
+  if (isGuestOnlyPath(pathname)) {
     return <FullscreenSpinner label="Zalogowano, przekierowuję…" />;
   }
 

@@ -6,7 +6,8 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/lib/auth";
 
-// Pełna nawigacja. Dashboard 🏠 na górze, panel bezpieczeństwa 🛡️ na dole.
+// Pełna nawigacja. Dashboard 🏠 na górze, panele administracyjne (📊 użycie,
+// 🛡️ bezpieczeństwo) na dole.
 const ROUTES = [
   { href: "/", emoji: "🏠", label: "Dashboard" },
   { href: "/chat", emoji: "💬", label: "Chat" },
@@ -27,6 +28,9 @@ const ROUTES = [
   { href: "/briefings", emoji: "📰", label: "Briefingi" },
   { href: "/generate", emoji: "🎨", label: "Grafiki" },
   { href: "/vision", emoji: "👁️", label: "Vision" },
+  // 📊 zajmują już Raporty — statystyki dostają 📈, żeby dało się je odróżnić
+  // w pasku jednym spojrzeniem.
+  { href: "/admin/dashboard", emoji: "📈", label: "Statystyki" },
   { href: "/admin/security", emoji: "🛡️", label: "Bezpieczeństwo" },
 ];
 

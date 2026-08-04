@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { DAILY_TOKEN_LIMIT, startOfToday } from "@/app/lib/budget";
 import { jsonUtf8 } from "@/app/lib/briefing";
+import { authorizeAdmin, loadEmails, label } from "@/app/lib/adminAuth";
 
 // Panel bezpieczeństwa (Lekcja 10, Warsztat 4) — źródło danych dla /admin/security.
 //
@@ -36,64 +37,8 @@ type Alert = {
   when: string | null;
 };
 
-// ── Kto może wejść do panelu ────────────────────────────────────────────────
-// Token sesji przychodzi w nagłówku Authorization (strona bierze go z
-// supabase.auth.getSession()). Weryfikujemy go po stronie serwera — samo
-// przysłanie user_id w body niczego by nie dowodziło, każdy wpisałby cudze.
-//
-// ADMIN_EMAILS (opcjonalna, lista po przecinku) zawęża dostęp do konkretnych
-// kont. Gdy jej nie ustawisz, panel widzi każdy zalogowany user — dla apki
-// jednoosobowej to w porządku, ale zanim wpuścisz kogokolwiek innego, ustaw ją
-// w .env.local i w zmiennych środowiskowych na Vercelu.
-async function authorize(
-  req: Request,
-): Promise<{ ok: true; email: string } | { ok: false; status: number; error: string }> {
-  const token = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
-  if (!token) {
-    return { ok: false, status: 401, error: "Brak tokenu sesji — zaloguj się." };
-  }
-
-  const { data, error } = await supabaseAdmin.auth.getUser(token);
-  if (error || !data.user) {
-    return { ok: false, status: 401, error: "Sesja wygasła — zaloguj się ponownie." };
-  }
-
-  const email = data.user.email ?? "";
-  const allowed = (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-
-  if (allowed.length > 0 && !allowed.includes(email.toLowerCase())) {
-    return { ok: false, status: 403, error: "To konto nie ma dostępu do panelu." };
-  }
-
-  return { ok: true, email };
-}
-
-// user_id → e-mail. Adresy siedzą w auth.users, do którego zwykły klient nie ma
-// dostępu — tylko service_role przez auth.admin.
-async function loadEmails(): Promise<Map<string, string>> {
-  const map = new Map<string, string>();
-  const { data, error } = await supabaseAdmin.auth.admin.listUsers({
-    page: 1,
-    perPage: 1000,
-  });
-
-  if (error) {
-    console.warn("Nie udało się pobrać listy użytkowników:", error.message);
-    return map;
-  }
-
-  for (const u of data.users) map.set(u.id, u.email ?? "(bez e-maila)");
-  return map;
-}
-
-// Skrót user_id na wypadek, gdy konto zostało skasowane, a logi po nim zostały.
-function label(userId: string | null, emails: Map<string, string>): string {
-  if (!userId) return "(anonim)";
-  return emails.get(userId) ?? `${userId.slice(0, 8)}…`;
-}
+// Autoryzacja (authorizeAdmin), lista e-maili (loadEmails) i skrót user_id
+// (label) siedzą w app/lib/adminAuth.ts — dzieli je z panelem /admin/dashboard.
 
 // Najdłuższa seria wiadomości w oknie 10 minut — klasyczne dwa wskaźniki po
 // posortowanej liście czasów, bez liczenia każdego okna od zera.
@@ -115,7 +60,7 @@ function maxBurst(times: number[]): { count: number; at: number } {
 }
 
 export async function GET(req: Request) {
-  const auth = await authorize(req);
+  const auth = await authorizeAdmin(req);
   if (!auth.ok) return jsonUtf8({ ok: false, error: auth.error }, auth.status);
 
   const todayISO = startOfToday();

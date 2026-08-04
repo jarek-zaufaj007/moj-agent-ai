@@ -30,7 +30,7 @@ function modelBadge(id?: string): { text: string; color: string } | null {
     case "gemini-3.1-pro-preview":
       return { text: "🧠 Pro", color: "#a855f7" };
     default:
-      return id ? { text: id, color: "#666" } : null;
+      return id ? { text: id, color: "var(--muted-dim)" } : null;
   }
 }
 
@@ -322,13 +322,13 @@ export default function Home() {
             style={{
               width: 32,
               height: 32,
-              border: "3px solid #333",
+              border: "3px solid var(--border)",
               borderTopColor: "#3b82f6",
               borderRadius: "50%",
               animation: "spin 0.8s linear infinite",
             }}
           />
-          <span style={{ color: "#888", fontSize: 14 }}>
+          <span style={{ color: "var(--muted)", fontSize: 14 }}>
             Wczytuję rozmowę...
           </span>
           <style>{"@keyframes spin { to { transform: rotate(360deg); } }"}</style>
@@ -339,7 +339,7 @@ export default function Home() {
         <div style={{ fontSize: 24, fontWeight: 700 }}>
           📢 Maja — Specjalistka ds. marketingu
         </div>
-        <div style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
           Ekspertka od marketingu i social media. Zapytaj mnie o strategię,
           treści i reklamy.
         </div>
@@ -362,10 +362,10 @@ export default function Home() {
               key={key}
               onClick={() => setModel(key)}
               style={{
-                background: active ? "#16324f" : "transparent",
-                border: `1px solid ${active ? "#3b82f6" : "#333"}`,
+                background: active ? "var(--accent-bg)" : "transparent",
+                border: `1px solid ${active ? "#3b82f6" : "var(--border)"}`,
                 borderRadius: 999,
-                color: active ? "#ededed" : "#888",
+                color: active ? "var(--text)" : "var(--muted)",
                 padding: "6px 14px",
                 fontSize: 14,
                 cursor: "pointer",
@@ -381,7 +381,7 @@ export default function Home() {
       {/* Panel pamięci / kontekstu */}
       <section
         style={{
-          border: "1px solid #333",
+          border: "1px solid var(--border)",
           borderRadius: 10,
           marginBottom: 12,
           fontSize: 13,
@@ -393,7 +393,7 @@ export default function Home() {
             width: "100%",
             background: "transparent",
             border: "none",
-            color: "#aaa",
+            color: "var(--muted-strong)",
             padding: "8px 12px",
             display: "flex",
             justifyContent: "space-between",
@@ -416,7 +416,7 @@ export default function Home() {
               alignItems: "center",
             }}
           >
-            <span style={{ color: "#888" }}>
+            <span style={{ color: "var(--muted)" }}>
               Wiadomości: {messages.length} | ~Tokeny: {approxTokens}
             </span>
             <div style={{ flex: 1 }} />
@@ -425,9 +425,9 @@ export default function Home() {
               disabled={messages.length === 0}
               style={{
                 background: "transparent",
-                border: "1px solid #333",
+                border: "1px solid var(--border)",
                 borderRadius: 8,
-                color: messages.length === 0 ? "#555" : "#ededed",
+                color: messages.length === 0 ? "var(--border-2)" : "var(--text)",
                 padding: "4px 10px",
                 cursor: messages.length === 0 ? "not-allowed" : "pointer",
                 fontSize: 13,
@@ -440,9 +440,9 @@ export default function Home() {
               disabled={messages.length === 0}
               style={{
                 background: "transparent",
-                border: "1px solid #333",
+                border: "1px solid var(--border)",
                 borderRadius: 8,
-                color: messages.length === 0 ? "#555" : "#ededed",
+                color: messages.length === 0 ? "var(--border-2)" : "var(--text)",
                 padding: "4px 10px",
                 cursor: messages.length === 0 ? "not-allowed" : "pointer",
                 fontSize: 13,
@@ -468,7 +468,7 @@ export default function Home() {
           <div style={{ marginTop: 24 }}>
             <p
               style={{
-                color: "#888",
+                color: "var(--muted)",
                 textAlign: "center",
                 marginBottom: 12,
               }}
@@ -488,10 +488,10 @@ export default function Home() {
                   key={q}
                   onClick={() => send(q)}
                   style={{
-                    background: "#1a1a2a",
-                    border: "1px solid #333",
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
                     borderRadius: 10,
-                    color: "#ededed",
+                    color: "var(--text)",
                     padding: "8px 12px",
                     fontSize: 13,
                     cursor: "pointer",
@@ -540,8 +540,8 @@ export default function Home() {
                 <span
                   style={{
                     fontSize: 11,
-                    color: "#ddd",
-                    background: "#1a1a2a",
+                    color: "var(--muted-strong)",
+                    background: "var(--surface)",
                     border: `1px solid ${badge.color}`,
                     borderRadius: 999,
                     padding: "1px 8px",
@@ -562,7 +562,7 @@ export default function Home() {
                         maxHeight: 160,
                         maxWidth: 240,
                         borderRadius: 10,
-                        border: "1px solid #333",
+                        border: "1px solid var(--border)",
                       }}
                     />
                   ))}
@@ -571,8 +571,8 @@ export default function Home() {
               {body && (
                 <div
                   style={{
-                    background: isUser ? "#2a2a3a" : "#1a1a2a",
-                    border: isUser ? "none" : "1px solid #333",
+                    background: isUser ? "var(--surface-2)" : "var(--surface)",
+                    border: isUser ? "none" : "1px solid var(--border)",
                     borderRadius: 12,
                     padding: "10px 14px",
                     lineHeight: 1.5,
@@ -602,11 +602,11 @@ export default function Home() {
           <div
             style={{
               alignSelf: "flex-start",
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 12,
               padding: "10px 14px",
-              color: "#888",
+              color: "var(--muted)",
             }}
           >
             Myślę...
@@ -620,17 +620,17 @@ export default function Home() {
         style={{
           position: "sticky",
           bottom: 0,
-          background: "#0a0a0a",
+          background: "var(--bg)",
           paddingBottom: 24,
         }}
       >
         {attach.error && (
           <div
             style={{
-              background: "#2a1a1a",
-              border: "1px solid #a33",
+              background: "var(--danger-bg)",
+              border: "1px solid var(--danger-border)",
               borderRadius: 10,
-              color: "#f0b0b0",
+              color: "var(--danger-text)",
               padding: "8px 12px",
               fontSize: 13,
               marginBottom: 8,
@@ -656,10 +656,10 @@ export default function Home() {
             placeholder="Napisz wiadomość lub wklej obraz (Ctrl+V)..."
             style={{
               flex: 1,
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 10,
-              color: "#ededed",
+              color: "var(--text)",
               padding: "12px 14px",
               fontSize: 16,
               outline: "none",
@@ -669,10 +669,10 @@ export default function Home() {
           type="submit"
           disabled={isLoading || !input.trim()}
           style={{
-            background: "#2a2a3a",
-            border: "1px solid #444",
+            background: "var(--surface-2)",
+            border: "1px solid var(--border-2)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "0 20px",
             fontSize: 16,
             cursor: isLoading || !input.trim() ? "not-allowed" : "pointer",

@@ -58,7 +58,7 @@ export default function FewShotPage() {
     >
       <header style={{ padding: "24px 0 16px", textAlign: "center" }}>
         <div style={{ fontSize: 24, fontWeight: 700 }}>📚 Słownik AI</div>
-        <div style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
           Wyjaśniam trudne pojęcia prostym językiem
         </div>
       </header>
@@ -74,7 +74,7 @@ export default function FewShotPage() {
         }}
       >
         {messages.length === 0 && (
-          <p style={{ color: "#888", textAlign: "center", marginTop: 40 }}>
+          <p style={{ color: "var(--muted)", textAlign: "center", marginTop: 40 }}>
             Wpisz pojęcie lub kliknij jeden z przykładów poniżej.
           </p>
         )}
@@ -89,8 +89,8 @@ export default function FewShotPage() {
               style={{
                 alignSelf: isUser ? "flex-end" : "flex-start",
                 maxWidth: "85%",
-                background: isUser ? "#2a2a3a" : "#1a1a2a",
-                border: isUser ? "none" : "1px solid #333",
+                background: isUser ? "var(--surface-2)" : "var(--surface)",
+                border: isUser ? "none" : "1px solid var(--border)",
                 borderRadius: 12,
                 padding: "10px 14px",
                 whiteSpace: "pre-wrap",
@@ -106,11 +106,11 @@ export default function FewShotPage() {
           <div
             style={{
               alignSelf: "flex-start",
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 12,
               padding: "10px 14px",
-              color: "#888",
+              color: "var(--muted)",
             }}
           >
             Myślę...
@@ -135,10 +135,10 @@ export default function FewShotPage() {
             type="button"
             onClick={() => setInput(term)}
             style={{
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 999,
-              color: "#ededed",
+              color: "var(--text)",
               padding: "6px 14px",
               fontSize: 13,
               cursor: "pointer",
@@ -157,7 +157,7 @@ export default function FewShotPage() {
           padding: "12px 0 24px",
           position: "sticky",
           bottom: 0,
-          background: "#0a0a0a",
+          background: "var(--bg)",
         }}
       >
         <input
@@ -166,10 +166,10 @@ export default function FewShotPage() {
           placeholder="Wpisz pojęcie do wyjaśnienia..."
           style={{
             flex: 1,
-            background: "#1a1a2a",
-            border: "1px solid #333",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "12px 14px",
             fontSize: 16,
             outline: "none",
@@ -179,10 +179,10 @@ export default function FewShotPage() {
           type="submit"
           disabled={isLoading || !input.trim()}
           style={{
-            background: "#2a2a3a",
-            border: "1px solid #444",
+            background: "var(--surface-2)",
+            border: "1px solid var(--border-2)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "0 20px",
             fontSize: 16,
             cursor: isLoading || !input.trim() ? "not-allowed" : "pointer",

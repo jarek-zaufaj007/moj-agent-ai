@@ -66,15 +66,15 @@ function toolDetail(input?: Record<string, unknown>): string {
 
 // Kolor akcentu karty na podstawie nagłówka sekcji (emoji).
 function sectionAccent(heading: string): { bg: string; border: string } {
-  if (heading.includes("🗺️")) return { bg: "#101a2e", border: "#3b82f6" };
-  if (heading.includes("📋")) return { bg: "#101a2e", border: "#60a5fa" };
-  if (heading.includes("🌤") || heading.includes("🌦")) return { bg: "#0a2030", border: "#38bdf8" };
-  if (heading.includes("💰") || heading.includes("💶") || heading.includes("💱")) return { bg: "#2a1f08", border: "#f59e0b" };
-  if (heading.includes("📅")) return { bg: "#2a1010", border: "#ef4444" };
-  if (heading.includes("🏛") || heading.includes("🏰")) return { bg: "#1e1030", border: "#a78bfa" };
-  if (heading.includes("✅")) return { bg: "#0a2a10", border: "#22c55e" };
-  if (heading.includes("🏆")) return { bg: "#2a2408", border: "#eab308" };
-  return { bg: "#141422", border: "#2a2a3a" };
+  if (heading.includes("🗺️")) return { bg: "var(--accent-bg)", border: "#3b82f6" };
+  if (heading.includes("📋")) return { bg: "var(--accent-bg)", border: "#60a5fa" };
+  if (heading.includes("🌤") || heading.includes("🌦")) return { bg: "var(--tint-blue)", border: "#38bdf8" };
+  if (heading.includes("💰") || heading.includes("💶") || heading.includes("💱")) return { bg: "var(--tint-amber)", border: "#f59e0b" };
+  if (heading.includes("📅")) return { bg: "var(--danger-bg)", border: "#ef4444" };
+  if (heading.includes("🏛") || heading.includes("🏰")) return { bg: "var(--tint-purple)", border: "#a78bfa" };
+  if (heading.includes("✅")) return { bg: "var(--tint-green)", border: "#22c55e" };
+  if (heading.includes("🏆")) return { bg: "var(--tint-gold)", border: "var(--warn-text)" };
+  return { bg: "var(--surface-3)", border: "var(--surface-2)" };
 }
 
 // Rozbij markdown na sekcje wg nagłówków ## / ###.
@@ -143,7 +143,7 @@ function ToolCard({
         display: "flex",
         alignItems: "center",
         gap: 8,
-        background: "#12122a",
+        background: "var(--surface)",
         border: "1px solid #3b82f6",
         borderRadius: 10,
         padding: "6px 12px",
@@ -154,7 +154,7 @@ function ToolCard({
       <span>{meta.emoji}</span>
       <span style={{ fontWeight: 600 }}>{meta.label}</span>
       {detail ? (
-        <span style={{ color: "#999" }}>
+        <span style={{ color: "var(--muted)" }}>
           — {detail.length > 50 ? detail.slice(0, 50) + "…" : detail}
         </span>
       ) : null}
@@ -235,7 +235,7 @@ export default function TravelPage() {
     >
       <header style={{ padding: "24px 0 12px", textAlign: "center" }}>
         <div style={{ fontSize: 24, fontWeight: 700 }}>✈️ Asystent podróży AI</div>
-        <div style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
           Powiedz dokąd jedziesz — agent zaplanuje wszystko
         </div>
       </header>
@@ -253,9 +253,9 @@ export default function TravelPage() {
           disabled={messages.length === 0}
           style={{
             background: "transparent",
-            border: "1px solid #333",
+            border: "1px solid var(--border)",
             borderRadius: 8,
-            color: messages.length === 0 ? "#555" : "#ededed",
+            color: messages.length === 0 ? "var(--border-2)" : "var(--text)",
             padding: "4px 12px",
             cursor: messages.length === 0 ? "not-allowed" : "pointer",
             fontSize: 13,
@@ -277,7 +277,7 @@ export default function TravelPage() {
       >
         {messages.length === 0 && (
           <div style={{ marginTop: 12 }}>
-            <p style={{ color: "#888", textAlign: "center", marginBottom: 12 }}>
+            <p style={{ color: "var(--muted)", textAlign: "center", marginBottom: 12 }}>
               Wybierz scenariusz albo opisz własną podróż:
             </p>
             <div
@@ -293,10 +293,10 @@ export default function TravelPage() {
                   key={q}
                   onClick={() => send(q)}
                   style={{
-                    background: "#1a1a2a",
-                    border: "1px solid #333",
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
                     borderRadius: 10,
-                    color: "#ededed",
+                    color: "var(--text)",
                     padding: "10px 14px",
                     fontSize: 13,
                     cursor: "pointer",
@@ -330,7 +330,7 @@ export default function TravelPage() {
               >
                 <div
                   style={{
-                    background: "#2a2a3a",
+                    background: "var(--surface-2)",
                     borderRadius: 12,
                     padding: "10px 14px",
                     lineHeight: 1.5,
@@ -376,7 +376,7 @@ export default function TravelPage() {
                 <div
                   style={{ display: "flex", flexDirection: "column", gap: 4 }}
                 >
-                  <span style={{ fontSize: 12, color: "#888" }}>
+                  <span style={{ fontSize: 12, color: "var(--muted)" }}>
                     🔎 Zebrane dane ({toolCards.length}):
                   </span>
                   {toolCards.map((t, i) => (
@@ -404,7 +404,7 @@ export default function TravelPage() {
               />
 
               {usedModel && (
-                <span style={{ fontSize: 11, color: "#666" }}>
+                <span style={{ fontSize: 11, color: "var(--muted-dim)" }}>
                   Model: {usedModel}
                 </span>
               )}
@@ -416,7 +416,7 @@ export default function TravelPage() {
                     flexDirection: "column",
                     gap: 4,
                     fontSize: 12,
-                    color: "#888",
+                    color: "var(--muted)",
                     paddingLeft: 2,
                   }}
                 >
@@ -442,11 +442,11 @@ export default function TravelPage() {
           <div
             style={{
               alignSelf: "flex-start",
-              background: "#101a2e",
+              background: "var(--accent-bg)",
               border: "1px solid #3b82f6",
               borderRadius: 12,
               padding: "10px 14px",
-              color: "#aab",
+              color: "var(--muted-strong)",
             }}
           >
             ✈️ Planuję Twoją podróż... {elapsed.toFixed(1)}s
@@ -460,7 +460,7 @@ export default function TravelPage() {
         style={{
           position: "sticky",
           bottom: 0,
-          background: "#0a0a0a",
+          background: "var(--bg)",
           paddingBottom: 24,
         }}
       >
@@ -474,10 +474,10 @@ export default function TravelPage() {
             placeholder="Np. Lecę do Barcelony na weekend..."
             style={{
               flex: 1,
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 10,
-              color: "#ededed",
+              color: "var(--text)",
               padding: "12px 14px",
               fontSize: 16,
               outline: "none",
@@ -487,10 +487,10 @@ export default function TravelPage() {
             type="submit"
             disabled={isLoading || !input.trim()}
             style={{
-              background: "#2a2a3a",
-              border: "1px solid #444",
+              background: "var(--surface-2)",
+              border: "1px solid var(--border-2)",
               borderRadius: 10,
-              color: "#ededed",
+              color: "var(--text)",
               padding: "0 20px",
               fontSize: 16,
               cursor: isLoading || !input.trim() ? "not-allowed" : "pointer",

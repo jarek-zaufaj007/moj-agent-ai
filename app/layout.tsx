@@ -1,24 +1,80 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AuthProvider, AppShell } from "@/app/lib/auth";
+import { ThemeProvider, THEME_INIT_SCRIPT } from "@/app/lib/theme";
+
+// Adres produkcyjny — potrzebny, żeby og:image miał pełny URL (social media
+// nie umieją w ścieżki względne). Na Vercelu można nadpisać przez env.
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://moj-agent-ai-one.vercel.app";
+
+const TITLE = "Mój Agent — centrum dowodzenia AI";
+const DESCRIPTION =
+  "Agent AI z bazą wiedzy, pamięcią rozmów i automatyzacją — 20+ narzędzi w jednym panelu.";
 
 export const metadata: Metadata = {
-  title: "Mój Agent — centrum dowodzenia AI",
-  description:
-    "Agent AI z 10 narzędziami: ReAct, asystent podróży, live dashboard z prawdziwymi danymi",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: TITLE,
+    template: "%s · Mój Agent",
+  },
+  description: DESCRIPTION,
+  applicationName: "Mój Agent",
+  // Favicon i ikona na iOS. Pliki leżą w public/ (wygenerowane w Warsztacie 4).
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  // Podgląd linku na LinkedIn / Slack / Twitterze.
+  // Sam obrazek generuje app/opengraph-image.tsx.
+  openGraph: {
+    type: "website",
+    locale: "pl_PL",
+    url: SITE_URL,
+    siteName: "Mój Agent",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+};
+
+export const viewport: Viewport = {
+  // Kolor paska przeglądarki na telefonie — inny dla każdego motywu.
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#f4f6fb" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pl">
+    <html lang="pl" suppressHydrationWarning>
+      <head>
+        {/* Motyw ustawiany przed pierwszym malowaniem — inaczej przy każdym
+            wejściu mignąłby ciemny ekran, zanim React zdąży się zamontować. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body>
-        {/* AuthProvider trzyma sesję i pilnuje dostępu; AppShell dobiera layout
-            (login bez sidebara, reszta z sidebarem). */}
-        <AuthProvider>
-          <AppShell>{children}</AppShell>
-        </AuthProvider>
+        {/* ThemeProvider trzyma wybór motywu, AuthProvider sesję,
+            a AppShell dobiera layout (login bez sidebara, reszta z sidebarem). */}
+        <ThemeProvider>
+          <AuthProvider>
+            <AppShell>{children}</AppShell>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

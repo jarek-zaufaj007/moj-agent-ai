@@ -104,7 +104,7 @@ function Skeleton({ w, h }: { w: number | string; h: number }) {
 
 function CardSkeleton({ delay }: { delay: number }) {
   return (
-    <Card gradient="#12121c" border="#26263a" delay={delay}>
+    <Card gradient="var(--surface-3)" border="var(--border-soft)" delay={delay}>
       <Skeleton w={120} h={16} />
       <Skeleton w="80%" h={28} />
       <Skeleton w="60%" h={16} />
@@ -177,10 +177,10 @@ export default function DashboardPage() {
           disabled={loading || refreshing}
           title="Odśwież dane"
           style={{
-            background: "#15151f",
-            border: "1px solid #333",
+            background: "var(--surface-3)",
+            border: "1px solid var(--border)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "8px 14px",
             fontSize: 14,
             cursor: loading || refreshing ? "not-allowed" : "pointer",
@@ -204,10 +204,10 @@ export default function DashboardPage() {
       {error && (
         <div
           style={{
-            background: "#2a1010",
-            border: "1px solid #a33",
+            background: "var(--danger-bg)",
+            border: "1px solid var(--danger-border)",
             borderRadius: 12,
-            color: "#f0b0b0",
+            color: "var(--danger-text)",
             padding: "12px 14px",
             marginBottom: 16,
           }}
@@ -241,19 +241,19 @@ export default function DashboardPage() {
             >
               <CardTitle>🌤️ POGODA</CardTitle>
               {"error" in data.weather ? (
-                <div style={{ color: "#f0b0b0" }}>🔴 {data.weather.error}</div>
+                <div style={{ color: "var(--danger-text)" }}>🔴 {data.weather.error}</div>
               ) : (
                 <>
-                  <div style={{ fontSize: 15, color: "#cde" }}>
+                  <div style={{ fontSize: 15, color: "var(--muted-strong)" }}>
                     {data.weather.city}
                   </div>
                   <div style={{ fontSize: 34, fontWeight: 800 }}>
                     {data.weather.emoji} {Math.round(data.weather.temperature)}°C
                   </div>
-                  <div style={{ fontSize: 14, color: "#bcd", textTransform: "capitalize" }}>
+                  <div style={{ fontSize: 14, color: "var(--muted)", textTransform: "capitalize" }}>
                     {data.weather.description}
                   </div>
-                  <div style={{ fontSize: 13, color: "#9ab" }}>
+                  <div style={{ fontSize: 13, color: "var(--muted)" }}>
                     💨 Wiatr: {data.weather.windSpeed} km/h · 💧 Wilgotność:{" "}
                     {data.weather.humidity}%
                   </div>
@@ -274,7 +274,7 @@ export default function DashboardPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {data.currencies.map((c) =>
                   "error" in c ? (
-                    <div key={c.currency} style={{ color: "#f0b0b0", fontSize: 13 }}>
+                    <div key={c.currency} style={{ color: "var(--danger-text)", fontSize: 13 }}>
                       🔴 {c.currency}: {c.error}
                     </div>
                   ) : (
@@ -293,7 +293,7 @@ export default function DashboardPage() {
                         <span
                           style={{
                             color:
-                              c.delta > 0 ? "#4ade80" : c.delta < 0 ? "#f87171" : "#9ab",
+                              c.delta > 0 ? "var(--accent-green)" : c.delta < 0 ? "var(--danger-text)" : "var(--muted)",
                             fontSize: 13,
                           }}
                         >
@@ -320,7 +320,7 @@ export default function DashboardPage() {
             >
               <CardTitle>📅 NADCHODZĄCE ŚWIĘTA</CardTitle>
               {"error" in data.holidays ? (
-                <div style={{ color: "#f0b0b0" }}>🔴 {data.holidays.error}</div>
+                <div style={{ color: "var(--danger-text)" }}>🔴 {data.holidays.error}</div>
               ) : (
                 <>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -329,15 +329,15 @@ export default function DashboardPage() {
                         key={h.date}
                         style={{ fontSize: 14, display: "flex", gap: 8 }}
                       >
-                        <span style={{ color: "#fbbf24", minWidth: 58 }}>
+                        <span style={{ color: "var(--warn-text)", minWidth: 58 }}>
                           {fmtHolidayDate(h.date)}
                         </span>
-                        <span style={{ color: "#edd" }}>{h.localName}</span>
+                        <span style={{ color: "var(--muted-strong)" }}>{h.localName}</span>
                       </div>
                     ))}
                   </div>
                   {data.holidays.daysUntilNext != null && (
-                    <div style={{ marginTop: "auto", fontSize: 13, color: "#fcd34d" }}>
+                    <div style={{ marginTop: "auto", fontSize: 13, color: "var(--warn-text)" }}>
                       ⏳ Następne za: {data.holidays.daysUntilNext} dni
                     </div>
                   )}

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/lib/auth";
+import { ThemeToggle } from "@/app/lib/theme";
 
 // Pełna nawigacja. Dashboard 🏠 na górze, panele administracyjne (📊 użycie,
 // 🛡️ bezpieczeństwo) na dole.
@@ -88,11 +89,14 @@ export function Sidebar() {
           </Link>
         ))}
 
-        {/* Konto zalogowanego użytkownika + wylogowanie — przyklejone na dole. */}
+        {/* Przełącznik motywu + konto + wylogowanie — przyklejone na dole. */}
         <div style={{ flex: 1 }} />
+        <div style={{ padding: "0 0 8px" }}>
+          <ThemeToggle />
+        </div>
         <div
           style={{
-            borderTop: "1px solid #1e1e2a",
+            borderTop: "1px solid var(--border-soft)",
             marginTop: 8,
             paddingTop: 10,
           }}
@@ -101,7 +105,7 @@ export function Sidebar() {
             <div
               style={{
                 fontSize: 12,
-                color: "#888",
+                color: "var(--muted)",
                 padding: "0 12px 8px",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -118,8 +122,8 @@ export function Sidebar() {
             style={{
               width: "100%",
               background: "transparent",
-              border: "1px solid #3a2a2a",
-              color: "#f0a0a0",
+              border: "1px solid var(--danger-border)",
+              color: "var(--danger-text)",
               cursor: "pointer",
               font: "inherit",
               fontSize: 14,

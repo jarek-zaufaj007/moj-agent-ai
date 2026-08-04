@@ -96,9 +96,9 @@ export default function ConversationPreviewPage() {
           href="/history"
           style={{
             background: "transparent",
-            border: "1px solid #333",
+            border: "1px solid var(--border)",
             borderRadius: 8,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "6px 12px",
             fontSize: 13,
             textDecoration: "none",
@@ -109,10 +109,10 @@ export default function ConversationPreviewPage() {
         <Link
           href={`/chat?conversation=${id}`}
           style={{
-            background: "#16324f",
+            background: "var(--accent-bg)",
             border: "1px solid #3b82f6",
             borderRadius: 8,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "6px 12px",
             fontSize: 13,
             textDecoration: "none",
@@ -123,13 +123,13 @@ export default function ConversationPreviewPage() {
       </div>
 
       {loading && (
-        <div style={{ color: "#888", textAlign: "center", padding: "40px 0" }}>
+        <div style={{ color: "var(--muted)", textAlign: "center", padding: "40px 0" }}>
           Wczytuję rozmowę...
         </div>
       )}
 
       {!loading && notFound && (
-        <div style={{ color: "#888", textAlign: "center", padding: "40px 0" }}>
+        <div style={{ color: "var(--muted)", textAlign: "center", padding: "40px 0" }}>
           Nie znaleziono tej rozmowy.
         </div>
       )}
@@ -140,7 +140,7 @@ export default function ConversationPreviewPage() {
             <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>
               {conversation.title?.trim() || "Rozmowa bez tytułu"}
             </h1>
-            <div style={{ color: "#888", fontSize: 13, marginTop: 4 }}>
+            <div style={{ color: "var(--muted)", fontSize: 13, marginTop: 4 }}>
               {new Date(conversation.updated_at).toLocaleString("pl-PL", {
                 day: "numeric",
                 month: "long",
@@ -153,7 +153,7 @@ export default function ConversationPreviewPage() {
 
           <main style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {messages.length === 0 && (
-              <div style={{ color: "#888", textAlign: "center" }}>
+              <div style={{ color: "var(--muted)", textAlign: "center" }}>
                 Ta rozmowa nie zawiera wiadomości.
               </div>
             )}
@@ -172,13 +172,13 @@ export default function ConversationPreviewPage() {
                     alignItems: isUser ? "flex-end" : "flex-start",
                   }}
                 >
-                  <span style={{ fontSize: 11, color: "#666" }}>
+                  <span style={{ fontSize: 11, color: "var(--muted-dim)" }}>
                     {isUser ? "Ty" : "Maja"} · {timeLabel(m.created_at)}
                   </span>
                   <div
                     style={{
-                      background: isUser ? "#2a2a3a" : "#1a1a2a",
-                      border: isUser ? "none" : "1px solid #333",
+                      background: isUser ? "var(--surface-2)" : "var(--surface)",
+                      border: isUser ? "none" : "1px solid var(--border)",
                       borderRadius: 12,
                       padding: "10px 14px",
                       whiteSpace: "pre-wrap",

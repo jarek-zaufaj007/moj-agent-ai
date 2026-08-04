@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { ThemeToggle } from "@/app/lib/theme";
 
 // Strona logowania (Warsztat 3). Jedno wejście do aplikacji: bez zalogowania
 // AuthProvider przekierowuje tutaj każdą chronioną trasę. Obsługuje dwa tryby —
@@ -94,14 +95,21 @@ export default function LoginPage() {
         alignItems: "center",
         justifyContent: "center",
         padding: 16,
+        position: "relative",
       }}
     >
+      {/* Motyw można wybrać jeszcze przed zalogowaniem — sidebar z drugim
+          przełącznikiem pojawia się dopiero po wejściu do aplikacji. */}
+      <div style={{ position: "absolute", top: 16, right: 16 }}>
+        <ThemeToggle className="theme-toggle-lp" />
+      </div>
+
       <div
         style={{
           width: "100%",
           maxWidth: 400,
-          background: "#111119",
-          border: "1px solid #2a2a2a",
+          background: "var(--surface-3)",
+          border: "1px solid var(--border-soft)",
           borderRadius: 16,
           padding: 28,
         }}
@@ -111,7 +119,7 @@ export default function LoginPage() {
           <h1 style={{ fontSize: 22, fontWeight: 800, margin: "8px 0 4px" }}>
             Mój Agent
           </h1>
-          <p style={{ color: "#888", fontSize: 14, margin: 0 }}>
+          <p style={{ color: "var(--muted)", fontSize: 14, margin: 0 }}>
             {isRegister
               ? "Załóż konto, aby zacząć rozmowę"
               : "Zaloguj się, aby kontynuować"}
@@ -127,7 +135,7 @@ export default function LoginPage() {
               style={{
                 display: "block",
                 fontSize: 13,
-                color: "#aaa",
+                color: "var(--muted-strong)",
                 marginBottom: 6,
               }}
             >
@@ -149,7 +157,7 @@ export default function LoginPage() {
               style={{
                 display: "block",
                 fontSize: 13,
-                color: "#aaa",
+                color: "var(--muted-strong)",
                 marginBottom: 6,
               }}
             >
@@ -182,7 +190,7 @@ export default function LoginPage() {
               borderRadius: 10,
               border: "none",
               background:
-                busy || !email.trim() || !password ? "#333" : "#2563eb",
+                busy || !email.trim() || !password ? "var(--muted-dim)" : "#2563eb",
               color: "#fff",
               fontSize: 15,
               fontWeight: 600,
@@ -204,7 +212,7 @@ export default function LoginPage() {
             marginTop: 18,
             textAlign: "center",
             fontSize: 14,
-            color: "#888",
+            color: "var(--muted)",
           }}
         >
           {isRegister ? "Masz już konto?" : "Nie masz jeszcze konta?"}{" "}
@@ -232,9 +240,9 @@ const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "11px 12px",
   borderRadius: 10,
-  border: "1px solid #333",
-  background: "#0a0a0a",
-  color: "#ededed",
+  border: "1px solid var(--border)",
+  background: "var(--bg)",
+  color: "var(--text)",
   fontSize: 15,
   outline: "none",
 };

@@ -101,10 +101,10 @@ function splitBlocks(text: string): Block[] {
 }
 
 const BLOCK_STYLE: Record<BlockKind, { bg: string; border: string }> = {
-  think: { bg: "#1a1a3a", border: "#3b82f6" },
-  observe: { bg: "#2a1a0a", border: "#f59e0b" },
-  result: { bg: "#0a2a0a", border: "#22c55e" },
-  plain: { bg: "#141422", border: "#2a2a3a" },
+  think: { bg: "var(--surface-2)", border: "#3b82f6" },
+  observe: { bg: "var(--tint-amber)", border: "#f59e0b" },
+  result: { bg: "var(--tint-green)", border: "#22c55e" },
+  plain: { bg: "var(--surface-3)", border: "var(--surface-2)" },
 };
 
 function BlockView({ block }: { block: Block }) {
@@ -145,7 +145,7 @@ function ToolCard({
         display: "flex",
         alignItems: "center",
         gap: 8,
-        background: "#12122a",
+        background: "var(--surface)",
         border: "1px solid #7c3aed",
         borderRadius: 10,
         padding: "8px 12px",
@@ -156,7 +156,7 @@ function ToolCard({
       <span>{meta.emoji}</span>
       <span style={{ fontWeight: 600 }}>{meta.label}</span>
       {detail ? (
-        <span style={{ color: "#999" }}>
+        <span style={{ color: "var(--muted)" }}>
           — {detail.length > 60 ? detail.slice(0, 60) + "…" : detail}
         </span>
       ) : null}
@@ -275,7 +275,7 @@ export default function ReactPage() {
         <div style={{ fontSize: 24, fontWeight: 700 }}>
           🔄 Agent ReAct — Autonomiczne rozumowanie
         </div>
-        <div style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
           Opisz cel → agent sam planuje i realizuje
         </div>
       </header>
@@ -288,7 +288,7 @@ export default function ReactPage() {
               display: "flex",
               justifyContent: "space-between",
               fontSize: 12,
-              color: "#aaa",
+              color: "var(--muted-strong)",
               marginBottom: 4,
             }}
           >
@@ -300,7 +300,7 @@ export default function ReactPage() {
           <div
             style={{
               height: 6,
-              background: "#1a1a2a",
+              background: "var(--surface)",
               borderRadius: 999,
               overflow: "hidden",
             }}
@@ -330,9 +330,9 @@ export default function ReactPage() {
           disabled={messages.length === 0}
           style={{
             background: "transparent",
-            border: "1px solid #333",
+            border: "1px solid var(--border)",
             borderRadius: 8,
-            color: messages.length === 0 ? "#555" : "#ededed",
+            color: messages.length === 0 ? "var(--border-2)" : "var(--text)",
             padding: "4px 12px",
             cursor: messages.length === 0 ? "not-allowed" : "pointer",
             fontSize: 13,
@@ -354,7 +354,7 @@ export default function ReactPage() {
       >
         {messages.length === 0 && (
           <div style={{ marginTop: 12 }}>
-            <p style={{ color: "#888", textAlign: "center", marginBottom: 12 }}>
+            <p style={{ color: "var(--muted)", textAlign: "center", marginBottom: 12 }}>
               Wypróbuj złożony, wielokrokowy cel:
             </p>
             <div
@@ -370,10 +370,10 @@ export default function ReactPage() {
                   key={q}
                   onClick={() => send(q)}
                   style={{
-                    background: "#1a1a2a",
-                    border: "1px solid #333",
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
                     borderRadius: 10,
-                    color: "#ededed",
+                    color: "var(--text)",
                     padding: "10px 14px",
                     fontSize: 13,
                     cursor: "pointer",
@@ -407,7 +407,7 @@ export default function ReactPage() {
               >
                 <div
                   style={{
-                    background: "#2a2a3a",
+                    background: "var(--surface-2)",
                     borderRadius: 12,
                     padding: "10px 14px",
                     lineHeight: 1.5,
@@ -462,7 +462,7 @@ export default function ReactPage() {
               />
 
               {usedModel && (
-                <span style={{ fontSize: 11, color: "#666" }}>
+                <span style={{ fontSize: 11, color: "var(--muted-dim)" }}>
                   Model: {usedModel}
                 </span>
               )}
@@ -474,7 +474,7 @@ export default function ReactPage() {
                     flexDirection: "column",
                     gap: 4,
                     fontSize: 12,
-                    color: "#888",
+                    color: "var(--muted)",
                     paddingLeft: 2,
                   }}
                 >
@@ -500,11 +500,11 @@ export default function ReactPage() {
           <div
             style={{
               alignSelf: "flex-start",
-              background: "#1a1a3a",
+              background: "var(--surface-2)",
               border: "1px solid #3b82f6",
               borderRadius: 12,
               padding: "10px 14px",
-              color: "#aab",
+              color: "var(--muted-strong)",
             }}
           >
             🧠 Myślę... {elapsed.toFixed(1)}s
@@ -518,7 +518,7 @@ export default function ReactPage() {
         style={{
           position: "sticky",
           bottom: 0,
-          background: "#0a0a0a",
+          background: "var(--bg)",
           paddingBottom: 24,
         }}
       >
@@ -532,10 +532,10 @@ export default function ReactPage() {
             placeholder="Opisz co chcesz osiągnąć..."
             style={{
               flex: 1,
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 10,
-              color: "#ededed",
+              color: "var(--text)",
               padding: "12px 14px",
               fontSize: 16,
               outline: "none",
@@ -545,10 +545,10 @@ export default function ReactPage() {
             type="submit"
             disabled={isLoading || !input.trim()}
             style={{
-              background: "#2a2a3a",
-              border: "1px solid #444",
+              background: "var(--surface-2)",
+              border: "1px solid var(--border-2)",
               borderRadius: 10,
-              color: "#ededed",
+              color: "var(--text)",
               padding: "0 20px",
               fontSize: 16,
               cursor: isLoading || !input.trim() ? "not-allowed" : "pointer",

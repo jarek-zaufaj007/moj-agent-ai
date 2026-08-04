@@ -270,7 +270,7 @@ export default function ReportPage() {
     >
       <header style={{ padding: "24px 0 12px", textAlign: "center" }}>
         <div style={{ fontSize: 24, fontWeight: 700 }}>📊 Generator raportów</div>
-        <div style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
           Opisz temat — agent napisze raport biznesowy
         </div>
       </header>
@@ -286,10 +286,10 @@ export default function ReportPage() {
           placeholder="Np. Rynek AI w Polsce w 2026 roku..."
           style={{
             flex: 1,
-            background: "#1a1a2a",
-            border: "1px solid #333",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "12px 14px",
             fontSize: 16,
             outline: "none",
@@ -299,10 +299,10 @@ export default function ReportPage() {
           type="submit"
           disabled={isLoading || !input.trim()}
           style={{
-            background: "#2a2a3a",
-            border: "1px solid #444",
+            background: "var(--surface-2)",
+            border: "1px solid var(--border-2)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "0 20px",
             fontSize: 15,
             whiteSpace: "nowrap",
@@ -320,9 +320,9 @@ export default function ReportPage() {
           onClick={() => setPanelOpen((v) => !v)}
           style={{
             background: "transparent",
-            border: "1px solid #333",
+            border: "1px solid var(--border)",
             borderRadius: 8,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "5px 12px",
             fontSize: 13,
             cursor: "pointer",
@@ -336,13 +336,13 @@ export default function ReportPage() {
           <div
             style={{
               marginTop: 8,
-              border: "1px solid #333",
+              border: "1px solid var(--border)",
               borderRadius: 10,
               overflow: "hidden",
             }}
           >
             {saved.length === 0 ? (
-              <div style={{ padding: "12px 14px", color: "#888", fontSize: 13 }}>
+              <div style={{ padding: "12px 14px", color: "var(--muted)", fontSize: 13 }}>
                 Brak zapisanych raportów. Wygeneruj raport i kliknij „💾 Zapisz w
                 bazie".
               </div>
@@ -357,16 +357,16 @@ export default function ReportPage() {
                     alignItems: "center",
                     gap: 8,
                     padding: "10px 14px",
-                    borderBottom: "1px solid #222",
+                    borderBottom: "1px solid var(--border-soft)",
                     cursor: "pointer",
-                    background: preview?.id === r.id ? "#15151f" : "transparent",
+                    background: preview?.id === r.id ? "var(--surface-3)" : "transparent",
                   }}
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
                         fontSize: 14,
-                        color: "#ededed",
+                        color: "var(--text)",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
@@ -374,7 +374,7 @@ export default function ReportPage() {
                     >
                       {r.title}
                     </div>
-                    <div style={{ fontSize: 11, color: "#777" }}>
+                    <div style={{ fontSize: 11, color: "var(--muted-dim)" }}>
                       {new Date(r.created_at).toLocaleString("pl-PL")}
                     </div>
                   </div>
@@ -383,9 +383,9 @@ export default function ReportPage() {
                     title="Usuń"
                     style={{
                       background: "transparent",
-                      border: "1px solid #3a2a2a",
+                      border: "1px solid var(--danger-border)",
                       borderRadius: 6,
-                      color: "#f0a0a0",
+                      color: "var(--danger-text)",
                       padding: "2px 8px",
                       fontSize: 12,
                       cursor: "pointer",
@@ -413,7 +413,7 @@ export default function ReportPage() {
         {/* Ekran startowy z przykładami */}
         {messages.length === 0 && (
           <div style={{ marginTop: 12 }}>
-            <p style={{ color: "#888", textAlign: "center", marginBottom: 12 }}>
+            <p style={{ color: "var(--muted)", textAlign: "center", marginBottom: 12 }}>
               Wybierz przykład lub wpisz własny temat:
             </p>
             <div
@@ -429,10 +429,10 @@ export default function ReportPage() {
                   key={q}
                   onClick={() => generate(q)}
                   style={{
-                    background: "#1a1a2a",
-                    border: "1px solid #333",
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
                     borderRadius: 10,
-                    color: "#ededed",
+                    color: "var(--text)",
                     padding: "8px 12px",
                     fontSize: 13,
                     cursor: "pointer",
@@ -455,8 +455,8 @@ export default function ReportPage() {
                 key={i}
                 style={{
                   fontSize: 11,
-                  color: "#ddd",
-                  background: "#1a1a2a",
+                  color: "var(--muted-strong)",
+                  background: "var(--surface)",
                   border: "1px solid #3b82f6",
                   borderRadius: 999,
                   padding: "2px 10px",
@@ -477,10 +477,10 @@ export default function ReportPage() {
               <button
                 onClick={copyReport}
                 style={{
-                  background: copied ? "#1a2a1a" : "#1a1a2a",
-                  border: `1px solid ${copied ? "#3a7a3a" : "#333"}`,
+                  background: copied ? "var(--ok-bg)" : "var(--surface)",
+                  border: `1px solid ${copied ? "var(--ok-border)" : "var(--border)"}`,
                   borderRadius: 8,
-                  color: copied ? "#9de89d" : "#ededed",
+                  color: copied ? "var(--ok-text)" : "var(--text)",
                   padding: "6px 14px",
                   fontSize: 13,
                   cursor: "pointer",
@@ -494,10 +494,10 @@ export default function ReportPage() {
                 onClick={saveReport}
                 disabled={!canSave || saving}
                 style={{
-                  background: savedId ? "#1a2a1a" : "#1a1a2a",
-                  border: `1px solid ${savedId ? "#3a7a3a" : "#333"}`,
+                  background: savedId ? "var(--ok-bg)" : "var(--surface)",
+                  border: `1px solid ${savedId ? "var(--ok-border)" : "var(--border)"}`,
                   borderRadius: 8,
-                  color: savedId ? "#9de89d" : "#ededed",
+                  color: savedId ? "var(--ok-text)" : "var(--text)",
                   padding: "6px 14px",
                   fontSize: 13,
                   cursor: !canSave || saving ? "not-allowed" : "pointer",
@@ -514,10 +514,10 @@ export default function ReportPage() {
               <button
                 onClick={downloadReport}
                 style={{
-                  background: "#1a1a2a",
-                  border: "1px solid #333",
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
                   borderRadius: 8,
-                  color: "#ededed",
+                  color: "var(--text)",
                   padding: "6px 14px",
                   fontSize: 13,
                   cursor: "pointer",
@@ -530,10 +530,10 @@ export default function ReportPage() {
             {saveError && (
               <div
                 style={{
-                  background: "#2a1a1a",
-                  border: "1px solid #a33",
+                  background: "var(--danger-bg)",
+                  border: "1px solid var(--danger-border)",
                   borderRadius: 10,
-                  color: "#f0b0b0",
+                  color: "var(--danger-text)",
                   padding: "8px 12px",
                   fontSize: 13,
                 }}
@@ -544,8 +544,8 @@ export default function ReportPage() {
 
             <article
               style={{
-                background: "#101018",
-                border: "1px solid #333",
+                background: "var(--surface-3)",
+                border: "1px solid var(--border)",
                 borderRadius: 12,
                 padding: "20px 24px",
                 lineHeight: 1.6,
@@ -566,7 +566,7 @@ export default function ReportPage() {
                   flexDirection: "column",
                   gap: 4,
                   fontSize: 12,
-                  color: "#888",
+                  color: "var(--muted)",
                   paddingLeft: 2,
                 }}
               >
@@ -592,11 +592,11 @@ export default function ReportPage() {
           <div
             style={{
               alignSelf: "flex-start",
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 12,
               padding: "10px 14px",
-              color: "#888",
+              color: "var(--muted)",
             }}
           >
             ✍️ Agent zbiera dane i pisze raport...
@@ -624,8 +624,8 @@ export default function ReportPage() {
           <div
             onClick={(e) => e.stopPropagation()} // klik w okno nie zamyka
             style={{
-              background: "#0f0f17",
-              border: "1px solid #333",
+              background: "var(--bg-elev)",
+              border: "1px solid var(--border)",
               borderRadius: 14,
               width: "100%",
               maxWidth: 760,
@@ -643,7 +643,7 @@ export default function ReportPage() {
                 alignItems: "center",
                 gap: 10,
                 padding: "14px 18px",
-                borderBottom: "1px solid #262636",
+                borderBottom: "1px solid var(--border-soft)",
                 flexShrink: 0,
               }}
             >
@@ -652,7 +652,7 @@ export default function ReportPage() {
                   style={{
                     fontSize: 15,
                     fontWeight: 600,
-                    color: "#ededed",
+                    color: "var(--text)",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
@@ -661,17 +661,17 @@ export default function ReportPage() {
                 >
                   📄 {preview.title}
                 </div>
-                <div style={{ fontSize: 11, color: "#777" }}>
+                <div style={{ fontSize: 11, color: "var(--muted-dim)" }}>
                   {new Date(preview.created_at).toLocaleString("pl-PL")}
                 </div>
               </div>
               <button
                 onClick={copyPreview}
                 style={{
-                  background: copied ? "#1a2a1a" : "#1a1a2a",
-                  border: `1px solid ${copied ? "#3a7a3a" : "#333"}`,
+                  background: copied ? "var(--ok-bg)" : "var(--surface)",
+                  border: `1px solid ${copied ? "var(--ok-border)" : "var(--border)"}`,
                   borderRadius: 8,
-                  color: copied ? "#9de89d" : "#ededed",
+                  color: copied ? "var(--ok-text)" : "var(--text)",
                   padding: "5px 10px",
                   fontSize: 12,
                   cursor: "pointer",
@@ -682,10 +682,10 @@ export default function ReportPage() {
               <button
                 onClick={downloadPreview}
                 style={{
-                  background: "#1a1a2a",
-                  border: "1px solid #333",
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
                   borderRadius: 8,
-                  color: "#ededed",
+                  color: "var(--text)",
                   padding: "5px 10px",
                   fontSize: 12,
                   cursor: "pointer",
@@ -698,9 +698,9 @@ export default function ReportPage() {
                 aria-label="Zamknij"
                 style={{
                   background: "transparent",
-                  border: "1px solid #333",
+                  border: "1px solid var(--border)",
                   borderRadius: 8,
-                  color: "#ededed",
+                  color: "var(--text)",
                   padding: "5px 10px",
                   fontSize: 14,
                   cursor: "pointer",

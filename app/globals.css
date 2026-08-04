@@ -1,3 +1,113 @@
+/* ── Motyw ciemny / jasny (Lekcja 11 / Warsztat 4) ────────────────────────
+   Wszystkie kolory aplikacji idą przez te zmienne. Przełącznik (app/lib/theme.tsx)
+   ustawia data-theme="light" na <html> i cała apka zmienia skórę — bez
+   przebudowy komponentów.                                                   */
+:root {
+  color-scheme: dark;
+
+  /* Tła i powierzchnie */
+  --bg: #0a0a0a;
+  --bg-elev: #0c0c14;
+  --surface: #1a1a2a;
+  --surface-2: #2a2a3a;
+  --surface-3: #14141c;
+
+  /* Obramowania */
+  --border: #333;
+  --border-2: #444;
+  --border-soft: #1e1e2a;
+
+  /* Tekst */
+  --text: #ededed;
+  --muted-strong: #c5c5d5;
+  --muted: #888;
+  --muted-dim: #666;
+
+  /* Komunikaty */
+  --danger-bg: #2a1a1a;
+  --danger-border: #a33;
+  --danger-text: #f0b0b0;
+  --ok-bg: #1a2a1a;
+  --ok-border: #3a7a3a;
+  --ok-text: #9de89d;
+  --warn-bg: #4a3a1a;
+  --accent-bg: #16324f;
+
+  /* Landing page: „szkło”, siatka i pasek nawigacji */
+  --glass: rgba(255, 255, 255, 0.04);
+  --glass-2: rgba(255, 255, 255, 0.07);
+  --glass-3: rgba(255, 255, 255, 0.16);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-border-2: rgba(255, 255, 255, 0.18);
+  --grid-line: rgba(255, 255, 255, 0.035);
+  --nav-bg: rgba(10, 10, 10, 0.72);
+  --blob-opacity: 0.45;
+  --shadow-lg: 0 30px 70px rgba(0, 0, 0, 0.55);
+  --accent-link: #7dd3fc;
+  --accent-green: #34d399;
+  --warn-text: #e8c07a;
+  --accent-fg: #fff;
+
+  /* Panele barwione (sekcje raportów, bloki agenta ReAct) */
+  --tint-blue: #0a2030;
+  --tint-amber: #2a1f08;
+  --tint-purple: #1e1030;
+  --tint-green: #0a2a10;
+  --tint-gold: #2a2408;
+  --hero-grad: linear-gradient(135deg, #0e3b2b 0%, #0b2a20 55%, #0a1712 100%);
+  --hero-border: #17392c;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f4f6fb;
+  --bg-elev: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #e8ecf6;
+  --surface-3: #eef1f8;
+
+  --border: #d3d8e6;
+  --border-2: #bfc5d6;
+  --border-soft: #e2e6f0;
+
+  --text: #15181f;
+  --muted-strong: #333a4a;
+  --muted: #5c6478;
+  --muted-dim: #7b8296;
+
+  --danger-bg: #fdecec;
+  --danger-border: #d98b8b;
+  --danger-text: #a02525;
+  --ok-bg: #e8f7ea;
+  --ok-border: #7cc487;
+  --ok-text: #1e6b2c;
+  --warn-bg: #fdf3d8;
+  --accent-bg: #dbe9ff;
+
+  --glass: rgba(15, 23, 42, 0.035);
+  --glass-2: rgba(15, 23, 42, 0.06);
+  --glass-3: rgba(15, 23, 42, 0.12);
+  --glass-border: rgba(15, 23, 42, 0.1);
+  --glass-border-2: rgba(15, 23, 42, 0.16);
+  --grid-line: rgba(15, 23, 42, 0.045);
+  --nav-bg: rgba(255, 255, 255, 0.78);
+  --blob-opacity: 0.28;
+  --shadow-lg: 0 30px 70px rgba(15, 23, 42, 0.18);
+  --accent-link: #0e7490;
+  --accent-green: #0f9d68;
+  --warn-text: #8a5a00;
+  --accent-fg: #14448a;
+
+  --tint-blue: #e3f1fb;
+  --tint-amber: #fbf0d9;
+  --tint-purple: #f0e8fc;
+  --tint-green: #e5f6e9;
+  --tint-gold: #f9f1d3;
+  --hero-grad: linear-gradient(135deg, #dcf1e6 0%, #e8f6ef 55%, #f2faf6 100%);
+  --hero-border: #bfe3d1;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,8 +116,8 @@
 
 html,
 body {
-  background: #0a0a0a;
-  color: #ededed;
+  background: var(--bg);
+  color: var(--text);
   font-family: Inter, system-ui, -apple-system, sans-serif;
 }
 
@@ -51,30 +161,30 @@ body {
 
 .markdown th,
 .markdown td {
-  border: 1px solid #333;
+  border: 1px solid var(--border);
   padding: 8px 10px;
   text-align: left;
 }
 
 .markdown th {
-  background: #2a2a3a;
+  background: var(--surface-2);
   font-weight: 600;
 }
 
 .markdown tr:nth-child(even) td {
-  background: #151520;
+  background: var(--surface-3);
 }
 
 .markdown code {
-  background: #2a2a3a;
+  background: var(--surface-2);
   padding: 1px 5px;
   border-radius: 4px;
   font-size: 13px;
 }
 
 .markdown pre {
-  background: #111118;
-  border: 1px solid #333;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 12px;
   overflow-x: auto;
@@ -116,7 +226,7 @@ body {
 }
 
 .skeleton {
-  background: #1a1a24;
+  background: var(--surface-3);
   border-radius: 8px;
   animation: pulse 1.4s ease-in-out infinite;
 }
@@ -133,8 +243,8 @@ body {
   left: 0;
   bottom: 0;
   width: 220px;
-  background: #0c0c14;
-  border-right: 1px solid #1e1e2a;
+  background: var(--bg-elev);
+  border-right: 1px solid var(--border-soft);
   padding: 16px 12px;
   overflow-y: auto;
   z-index: 50;
@@ -148,7 +258,7 @@ body {
   font-size: 16px;
   font-weight: 800;
   padding: 6px 12px 14px;
-  color: #fff;
+  color: var(--text);
 }
 
 .nav-link {
@@ -157,19 +267,19 @@ body {
   gap: 10px;
   padding: 9px 12px;
   border-radius: 10px;
-  color: #cfd0da;
+  color: var(--muted-strong);
   text-decoration: none;
   font-size: 14px;
   border: 1px solid transparent;
 }
 
 .nav-link:hover {
-  background: #15151f;
+  background: var(--surface-3);
 }
 
 .nav-link.active {
-  background: #16324f;
-  color: #fff;
+  background: var(--accent-bg);
+  color: var(--accent-fg);
   font-weight: 700;
   border: 1px solid #3b82f6;
 }
@@ -192,10 +302,10 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--glass-2);
+  border: 1px solid var(--glass-border);
   border-radius: 10px;
-  color: #ededed;
+  color: var(--text);
   text-decoration: none;
   padding: 8px 10px;
   font-size: 13px;
@@ -207,20 +317,75 @@ body {
 }
 
 .quick-action:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.35);
+  background: var(--glass-3);
+  border-color: var(--glass-border-2);
   transform: translateY(-2px);
 }
 
 .hamburger {
-  background: #15151f;
-  border: 1px solid #333;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  color: #ededed;
+  color: var(--text);
   font-size: 18px;
   padding: 4px 12px;
   cursor: pointer;
   line-height: 1;
+}
+
+/* ── Przełącznik motywu 🌙 / ☀️ ──────────────────────────────────────── */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-3);
+  color: var(--muted-strong);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+/* Wariant na landing page — okrągły, tylko ikonka */
+.theme-toggle-lp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.theme-toggle-lp:hover {
+  background: var(--glass-2);
+  border-color: var(--glass-border-2);
+  transform: translateY(-1px);
+}
+
+.theme-toggle-lp .theme-toggle-text {
+  display: none;
 }
 
 @media (max-width: 768px) {
@@ -243,8 +408,8 @@ body {
     align-items: center;
     gap: 12px;
     padding: 10px 14px;
-    background: #0a0a0a;
-    border-bottom: 1px solid #1e1e2a;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border-soft);
     font-weight: 700;
   }
   .nav-backdrop.show {
@@ -277,7 +442,7 @@ body {
   display: block;
   border-radius: 50%;
   filter: blur(90px);
-  opacity: 0.45;
+  opacity: var(--blob-opacity);
   animation: lpFloat 20s ease-in-out infinite;
 }
 
@@ -311,8 +476,8 @@ body {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 56px 56px;
   mask-image: radial-gradient(ellipse at 50% 0%, #000 40%, transparent 78%);
   -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 40%, transparent 78%);
@@ -336,10 +501,10 @@ body {
   position: sticky;
   top: 0;
   z-index: 30;
-  background: rgba(10, 10, 10, 0.72);
+  background: var(--nav-bg);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid var(--glass-2);
 }
 
 .lp-nav-inner {
@@ -359,7 +524,7 @@ body {
 }
 
 .lp-nav-link {
-  color: #cbd5e1;
+  color: var(--muted-strong);
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
@@ -370,8 +535,8 @@ body {
 }
 
 .lp-nav-link:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.07);
+  color: var(--text);
+  background: var(--glass-2);
 }
 
 /* Typografia hero */
@@ -402,13 +567,13 @@ body {
   gap: 9px;
   padding: 7px 15px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   font-size: 13px;
   font-weight: 600;
-  color: #d1d5db;
+  color: var(--muted-strong);
 }
 
 .lp-pulse-dot {
@@ -470,9 +635,9 @@ body {
   justify-content: center;
   padding: 15px 26px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.04);
-  color: #e5e7eb;
+  border: 1px solid var(--glass-border-2);
+  background: var(--glass);
+  color: var(--muted-strong);
   text-decoration: none;
   font-size: 16px;
   font-weight: 600;
@@ -480,8 +645,8 @@ body {
 }
 
 .lp-cta-ghost:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.32);
+  background: var(--glass-3);
+  border-color: var(--glass-border-2);
   transform: translateY(-2px);
 }
 
@@ -502,8 +667,8 @@ body {
   gap: 18px;
   padding: 22px 18px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -525,8 +690,8 @@ body {
 }
 
 .lp-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
   border-radius: 18px;
   padding: 22px;
   backdrop-filter: blur(10px);
@@ -536,8 +701,8 @@ body {
 
 .lp-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.22);
-  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--glass-border-2);
+  background: var(--glass-2);
 }
 
 .lp-card-icon {
@@ -554,9 +719,9 @@ body {
 .lp-window {
   border-radius: 18px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: #0b0b12;
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+  border: 1px solid var(--glass-border);
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-lg);
 }
 
 .lp-window-bar {
@@ -564,8 +729,8 @@ body {
   align-items: center;
   gap: 7px;
   padding: 11px 14px;
-  background: #14141d;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface-3);
+  border-bottom: 1px solid var(--glass-2);
 }
 
 .lp-dot {
@@ -577,9 +742,9 @@ body {
 .lp-window-url {
   margin-left: 12px;
   font-size: 12px;
-  color: #6b7280;
-  background: #0d0d14;
-  border: 1px solid #22222e;
+  color: var(--muted);
+  background: var(--bg-elev);
+  border: 1px solid var(--border-soft);
   border-radius: 7px;
   padding: 3px 12px;
 }
@@ -592,8 +757,8 @@ body {
 .lp-mock-sidebar {
   width: 190px;
   flex-shrink: 0;
-  background: #0c0c14;
-  border-right: 1px solid #1e1e2a;
+  background: var(--bg-elev);
+  border-right: 1px solid var(--border-soft);
   padding: 14px 10px;
 }
 
@@ -610,14 +775,14 @@ body {
   padding: 8px 10px;
   border-radius: 9px;
   font-size: 13px;
-  color: #9ca3af;
+  color: var(--muted);
   border: 1px solid transparent;
 }
 
 .lp-mock-nav.active {
-  background: #16324f;
+  background: var(--accent-bg);
   border-color: #3b82f6;
-  color: #fff;
+  color: var(--accent-fg);
   font-weight: 700;
 }
 
@@ -647,18 +812,18 @@ body {
 
 .lp-bubble-ai {
   align-self: flex-start;
-  background: #15151f;
-  border: 1px solid #26263a;
-  color: #d1d5db;
+  background: var(--surface-3);
+  border: 1px solid var(--border-soft);
+  color: var(--muted-strong);
   border-bottom-left-radius: 5px;
 }
 
 .lp-source {
   margin-top: 10px;
   padding-top: 9px;
-  border-top: 1px dashed #33334a;
+  border-top: 1px dashed var(--border-soft);
   font-size: 12px;
-  color: #7dd3fc;
+  color: var(--accent-link);
 }
 
 .lp-typing {
@@ -671,7 +836,7 @@ body {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #6b7280;
+  background: var(--muted);
   animation: lpTyping 1.3s ease-in-out infinite;
 }
 
@@ -702,8 +867,8 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  border: 1px solid #26263a;
-  background: #0d0d14;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-elev);
   border-radius: 12px;
   padding: 12px 14px;
   font-size: 14px;
@@ -726,15 +891,15 @@ body {
   display: flex;
   flex-direction: column;
   gap: 9px;
-  background: #0d0d14;
+  background: var(--bg-elev);
   border-radius: 18px 18px 0 0;
 }
 
 .lp-mini-row {
   font-size: 13px;
-  color: #cbd5e1;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--muted-strong);
+  background: var(--glass);
+  border: 1px solid var(--glass-2);
   border-radius: 9px;
   padding: 8px 11px;
 }
@@ -749,8 +914,8 @@ body {
 .lp-step {
   padding: 22px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass);
+  border: 1px solid var(--glass-2);
 }
 
 .lp-step-n {
@@ -775,14 +940,14 @@ body {
   background:
     radial-gradient(ellipse at 50% 0%, rgba(124, 58, 237, 0.35), transparent 65%),
     linear-gradient(140deg, rgba(37, 99, 235, 0.22), rgba(124, 58, 237, 0.18));
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  border: 1px solid var(--glass-border);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
 /* Stopka */
 .lp-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--glass-2);
   margin-top: 40px;
 }
 
@@ -828,6 +993,19 @@ body {
   .lp-cta-lg,
   .lp-cta-ghost {
     width: 100%;
+  }
+  .theme-toggle-lp {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+}
+
+/* Na wąskim ekranie pasek nie mieści brandu, przełącznika, linku „Zaloguj się”
+   i przycisku naraz — link znika, bo CTA prowadzi w to samo miejsce. */
+@media (max-width: 480px) {
+  .lp-hide-narrow {
+    display: none;
   }
 }
 

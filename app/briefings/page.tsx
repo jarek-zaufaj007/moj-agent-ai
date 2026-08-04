@@ -250,7 +250,7 @@ export default function BriefingsPage() {
         }
         .br-subtitle {
           margin: 0;
-          color: #8a8a9a;
+          color: var(--muted);
           font-size: 14px;
         }
         .br-generate {
@@ -273,23 +273,23 @@ export default function BriefingsPage() {
           cursor: default;
         }
         .br-error {
-          background: #2a1a1a;
-          border: 1px solid #5a2a2a;
-          color: #f0a0a0;
+          background: var(--danger-bg);
+          border: 1px solid var(--danger-border);
+          color: var(--danger-text);
           padding: 12px 14px;
           border-radius: 10px;
           margin-bottom: 16px;
           font-size: 14px;
         }
         .br-muted {
-          color: #8a8a9a;
+          color: var(--muted);
           padding: 24px 0;
         }
         .br-empty {
           text-align: center;
-          color: #8a8a9a;
+          color: var(--muted);
           padding: 48px 16px;
-          border: 1px dashed #2a2a3a;
+          border: 1px dashed var(--surface-2);
           border-radius: 14px;
           display: flex;
           flex-direction: column;
@@ -318,18 +318,18 @@ export default function BriefingsPage() {
           justify-content: space-between;
           font-size: 14px;
           font-weight: 600;
-          color: #c5c5d5;
+          color: var(--muted-strong);
           padding: 0 4px 10px;
         }
         .br-count {
-          background: #1a1a26;
-          border: 1px solid #2c2c42;
+          background: var(--surface);
+          border: 1px solid var(--surface-2);
           border-radius: 999px;
           min-width: 24px;
           padding: 2px 8px;
           text-align: center;
           font-size: 12px;
-          color: #8a8a9a;
+          color: var(--muted);
         }
         .br-list {
           display: flex;
@@ -340,8 +340,8 @@ export default function BriefingsPage() {
         }
         .br-card {
           text-align: left;
-          background: #14141c;
-          border: 1px solid #23233a;
+          background: var(--surface-3);
+          border: 1px solid var(--surface-2);
           border-radius: 14px;
           padding: 14px 16px;
           cursor: pointer;
@@ -350,11 +350,11 @@ export default function BriefingsPage() {
           color: inherit;
         }
         .br-card:hover {
-          border-color: #3a3a5a;
+          border-color: var(--border-2);
         }
         .br-card-active {
           border-color: #5b6cff;
-          background: #191933;
+          background: var(--surface-2);
         }
         .br-card-date {
           font-weight: 600;
@@ -367,22 +367,22 @@ export default function BriefingsPage() {
           text-transform: uppercase;
         }
         .br-card-preview {
-          color: #b5b5c5;
+          color: var(--muted-strong);
           font-size: 13px;
           line-height: 1.5;
           margin-bottom: 8px;
         }
         .br-card-status {
           font-size: 12px;
-          color: #6ecf9a;
+          color: var(--ok-text);
         }
         /* Ręczny briefing na niebiesko — w kolorze przycisku, który go stworzył. */
         .br-card-status.br-manual {
           color: #8b9aff;
         }
         .br-detail {
-          background: #0f0f18;
-          border: 1px solid #23233a;
+          background: var(--bg-elev);
+          border: 1px solid var(--surface-2);
           border-radius: 18px;
           padding: 22px 26px 28px;
           min-width: 0; /* bez tego długi kod/tabela rozpycha grid */
@@ -392,7 +392,7 @@ export default function BriefingsPage() {
           align-items: flex-start;
           justify-content: space-between;
           gap: 12px;
-          border-bottom: 1px solid #1e1e2e;
+          border-bottom: 1px solid var(--border-soft);
           padding-bottom: 14px;
           margin-bottom: 6px;
         }
@@ -404,14 +404,14 @@ export default function BriefingsPage() {
           text-transform: uppercase;
         }
         .br-detail-meta {
-          color: #8a8a9a;
+          color: var(--muted);
           font-size: 12px;
           margin-top: 3px;
         }
         .br-chip {
-          background: #1a1a26;
-          border: 1px solid #2c2c42;
-          color: #c5c5d5;
+          background: var(--surface);
+          border: 1px solid var(--surface-2);
+          color: var(--muted-strong);
           border-radius: 8px;
           padding: 6px 12px;
           font-size: 13px;

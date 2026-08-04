@@ -201,7 +201,7 @@ export default function KnowledgePage() {
         <h1 style={{ fontSize: 26, fontWeight: 700, margin: 0 }}>
           🔍 Podgląd bazy wiedzy
         </h1>
-        <p style={{ color: "#888", marginTop: 6, fontSize: 14 }}>
+        <p style={{ color: "var(--muted)", marginTop: 6, fontSize: 14 }}>
           Sprawdź, co agent naprawdę znajduje — zanim go o to zapytasz.
         </p>
       </header>
@@ -209,14 +209,14 @@ export default function KnowledgePage() {
       {/* ── Wyszukiwarka (test RAG bez agenta) ────────────────────── */}
       <div
         style={{
-          border: "1px solid #2a2a2a",
+          border: "1px solid var(--border-soft)",
           borderRadius: 12,
           padding: 16,
           marginBottom: 28,
         }}
       >
         <label
-          style={{ display: "block", fontSize: 13, color: "#aaa", marginBottom: 6 }}
+          style={{ display: "block", fontSize: 13, color: "var(--muted-strong)", marginBottom: 6 }}
         >
           Szukaj w bazie wiedzy
         </label>
@@ -232,8 +232,8 @@ export default function KnowledgePage() {
               flex: 1,
               padding: "10px 12px",
               borderRadius: 8,
-              border: "1px solid #333",
-              background: "#111",
+              border: "1px solid var(--border)",
+              background: "var(--surface-3)",
               color: "inherit",
               fontSize: 14,
             }}
@@ -245,7 +245,7 @@ export default function KnowledgePage() {
               padding: "10px 16px",
               borderRadius: 8,
               border: "none",
-              background: !query.trim() || search.kind === "loading" ? "#333" : "#2563eb",
+              background: !query.trim() || search.kind === "loading" ? "var(--muted-dim)" : "#2563eb",
               color: "#fff",
               fontSize: 14,
               fontWeight: 600,
@@ -258,7 +258,7 @@ export default function KnowledgePage() {
           </button>
         </div>
 
-        <p style={{ color: "#666", fontSize: 12, margin: "8px 0 0" }}>
+        <p style={{ color: "var(--muted-dim)", fontSize: 12, margin: "8px 0 0" }}>
           To czyste wyszukiwanie wektorowe — bez modelu. Agent widzi tylko
           fragmenty z podobieństwem powyżej progu.
         </p>
@@ -272,13 +272,13 @@ export default function KnowledgePage() {
         {search.kind === "done" && (
           <div style={{ marginTop: 16 }}>
             {search.results.length === 0 ? (
-              <div style={{ fontSize: 14, color: "#888" }}>
+              <div style={{ fontSize: 14, color: "var(--muted)" }}>
                 Brak jakichkolwiek trafień dla „{search.query}”. Agent odmówi
                 odpowiedzi na to pytanie.
               </div>
             ) : (
               <>
-                <div style={{ fontSize: 13, color: "#aaa", marginBottom: 10 }}>
+                <div style={{ fontSize: 13, color: "var(--muted-strong)", marginBottom: 10 }}>
                   {search.results.filter((r) => r.similarity >= search.agentThreshold).length}{" "}
                   z {search.results.length} fragmentów przekracza próg{" "}
                   {search.agentThreshold} — tylko te trafią do agenta.
@@ -290,7 +290,7 @@ export default function KnowledgePage() {
                       <div
                         key={`${hit.title}-${i}`}
                         style={{
-                          border: `1px solid ${visible ? "#1f3a2a" : "#2a2a2a"}`,
+                          border: `1px solid ${visible ? "var(--ok-border)" : "var(--border-soft)"}`,
                           borderRadius: 10,
                           padding: "10px 12px",
                           opacity: visible ? 1 : 0.55,
@@ -308,7 +308,7 @@ export default function KnowledgePage() {
                           <span style={{ fontSize: 13, fontWeight: 600 }}>
                             📄 {hit.title}
                             {typeof hit.metadata?.chunk_index === "number" && (
-                              <span style={{ color: "#666", fontWeight: 400 }}>
+                              <span style={{ color: "var(--muted-dim)", fontWeight: 400 }}>
                                 {" "}
                                 · fragment {hit.metadata.chunk_index + 1}
                                 {hit.metadata.total_chunks
@@ -321,7 +321,7 @@ export default function KnowledgePage() {
                             style={{
                               fontSize: 12,
                               fontWeight: 600,
-                              color: visible ? "#22c55e" : "#777",
+                              color: visible ? "#22c55e" : "var(--muted-dim)",
                               flexShrink: 0,
                             }}
                           >
@@ -332,7 +332,7 @@ export default function KnowledgePage() {
                         <div
                           style={{
                             fontSize: 13,
-                            color: "#bbb",
+                            color: "var(--muted-strong)",
                             lineHeight: 1.5,
                             whiteSpace: "pre-wrap",
                           }}
@@ -340,7 +340,7 @@ export default function KnowledgePage() {
                           {hit.content}
                         </div>
                         {hit.added_at && (
-                          <div style={{ fontSize: 11, color: "#666", marginTop: 6 }}>
+                          <div style={{ fontSize: 11, color: "var(--muted-dim)", marginTop: 6 }}>
                             dodano: {hit.added_at}
                           </div>
                         )}
@@ -371,15 +371,15 @@ export default function KnowledgePage() {
       </div>
 
       {loadingDocs ? (
-        <div style={{ color: "#666", fontSize: 14 }}>Wczytuję…</div>
+        <div style={{ color: "var(--muted-dim)", fontSize: 14 }}>Wczytuję…</div>
       ) : docs.length === 0 ? (
-        <div style={{ color: "#666", fontSize: 14 }}>
+        <div style={{ color: "var(--muted-dim)", fontSize: 14 }}>
           Baza jest pusta. <Link href="/upload">Wklej pierwszy dokument</Link> — bez
           tego agent odmówi odpowiedzi na pytania o firmę.
         </div>
       ) : (
         <>
-          <div style={{ color: "#888", fontSize: 13, marginBottom: 12 }}>
+          <div style={{ color: "var(--muted)", fontSize: 13, marginBottom: 12 }}>
             {totalChunks} {plural(totalChunks, "fragment", "fragmenty", "fragmentów")} z{" "}
             {docs.length} {plural(docs.length, "dokumentu", "dokumentów", "dokumentów")}
           </div>
@@ -393,7 +393,7 @@ export default function KnowledgePage() {
                 <div
                   key={doc.title}
                   style={{
-                    border: `1px solid ${open ? "#2563eb" : "#2a2a2a"}`,
+                    border: `1px solid ${open ? "#2563eb" : "var(--border-soft)"}`,
                     borderRadius: 10,
                     overflow: "hidden",
                   }}
@@ -422,7 +422,7 @@ export default function KnowledgePage() {
                       <span
                         style={{
                           display: "block",
-                          color: "#777",
+                          color: "var(--muted-dim)",
                           fontSize: 12,
                           marginTop: 2,
                         }}
@@ -432,7 +432,7 @@ export default function KnowledgePage() {
                         {formatDate(doc.createdAt)}
                       </span>
                     </span>
-                    <span style={{ color: "#777", fontSize: 12, flexShrink: 0 }}>
+                    <span style={{ color: "var(--muted-dim)", fontSize: 12, flexShrink: 0 }}>
                       {open ? "▲ zwiń" : "▼ podgląd"}
                     </span>
                   </button>
@@ -440,7 +440,7 @@ export default function KnowledgePage() {
                   {open && (
                     <div style={{ padding: "0 14px 14px" }}>
                       {loadingChunks === doc.title || !docChunks ? (
-                        <div style={{ color: "#666", fontSize: 13 }}>
+                        <div style={{ color: "var(--muted-dim)", fontSize: 13 }}>
                           Wczytuję fragmenty…
                         </div>
                       ) : (
@@ -451,21 +451,21 @@ export default function KnowledgePage() {
                             <div
                               key={chunk.id}
                               style={{
-                                border: "1px solid #222",
+                                border: "1px solid var(--border-soft)",
                                 borderRadius: 8,
                                 padding: "8px 10px",
-                                background: "#111",
+                                background: "var(--surface-3)",
                               }}
                             >
                               <div
-                                style={{ fontSize: 11, color: "#666", marginBottom: 4 }}
+                                style={{ fontSize: 11, color: "var(--muted-dim)", marginBottom: 4 }}
                               >
                                 fragment {chunk.chunkIndex + 1} z {doc.chunks}
                               </div>
                               <div
                                 style={{
                                   fontSize: 13,
-                                  color: "#bbb",
+                                  color: "var(--muted-strong)",
                                   lineHeight: 1.5,
                                   whiteSpace: "pre-wrap",
                                 }}

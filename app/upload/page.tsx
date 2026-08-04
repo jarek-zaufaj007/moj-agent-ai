@@ -174,7 +174,7 @@ export default function UploadPage() {
     <div style={{ maxWidth: 800, margin: "0 auto", padding: "24px 16px 48px" }}>
       <header style={{ marginBottom: 20 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, margin: 0 }}>📚 Baza wiedzy</h1>
-        <p style={{ color: "#888", marginTop: 6, fontSize: 14 }}>
+        <p style={{ color: "var(--muted)", marginTop: 6, fontSize: 14 }}>
           Wklej tekst — agent będzie z niego korzystał
         </p>
       </header>
@@ -182,13 +182,13 @@ export default function UploadPage() {
       {/* ── Formularz ─────────────────────────────────────────────── */}
       <div
         style={{
-          border: "1px solid #2a2a2a",
+          border: "1px solid var(--border-soft)",
           borderRadius: 12,
           padding: 16,
           marginBottom: 28,
         }}
       >
-        <label style={{ display: "block", fontSize: 13, color: "#aaa", marginBottom: 6 }}>
+        <label style={{ display: "block", fontSize: 13, color: "var(--muted-strong)", marginBottom: 6 }}>
           Tytuł dokumentu
         </label>
         <input
@@ -200,15 +200,15 @@ export default function UploadPage() {
             width: "100%",
             padding: "10px 12px",
             borderRadius: 8,
-            border: "1px solid #333",
-            background: "#111",
+            border: "1px solid var(--border)",
+            background: "var(--surface-3)",
             color: "inherit",
             fontSize: 14,
             marginBottom: 16,
           }}
         />
 
-        <label style={{ display: "block", fontSize: 13, color: "#aaa", marginBottom: 6 }}>
+        <label style={{ display: "block", fontSize: 13, color: "var(--muted-strong)", marginBottom: 6 }}>
           Treść dokumentu
         </label>
         <textarea
@@ -221,8 +221,8 @@ export default function UploadPage() {
             minHeight: 300,
             padding: "10px 12px",
             borderRadius: 8,
-            border: "1px solid #333",
-            background: "#111",
+            border: "1px solid var(--border)",
+            background: "var(--surface-3)",
             color: "inherit",
             fontSize: 14,
             fontFamily: "inherit",
@@ -237,8 +237,8 @@ export default function UploadPage() {
               title={ex.hint}
               style={{
                 fontSize: 12,
-                color: "#777",
-                border: "1px solid #2a2a2a",
+                color: "var(--muted-dim)",
+                border: "1px solid var(--border-soft)",
                 borderRadius: 999,
                 padding: "3px 10px",
               }}
@@ -255,7 +255,7 @@ export default function UploadPage() {
             padding: "10px 16px",
             borderRadius: 8,
             border: "none",
-            background: isWorking || !title.trim() || !content.trim() ? "#333" : "#2563eb",
+            background: isWorking || !title.trim() || !content.trim() ? "var(--muted-dim)" : "#2563eb",
             color: "#fff",
             fontSize: 14,
             fontWeight: 600,
@@ -269,7 +269,7 @@ export default function UploadPage() {
         {/* ── Postęp / wynik ──────────────────────────────────────── */}
         {isWorking && (
           <div style={{ marginTop: 16 }}>
-            <div style={{ fontSize: 13, color: "#aaa", marginBottom: 6 }}>
+            <div style={{ fontSize: 13, color: "var(--muted-strong)", marginBottom: 6 }}>
               {status.total === 0
                 ? "Dzielę tekst na fragmenty…"
                 : `Przetwarzam fragment ${status.current} z ${status.total}…`}
@@ -277,7 +277,7 @@ export default function UploadPage() {
             <div
               style={{
                 height: 8,
-                background: "#222",
+                background: "var(--border-soft)",
                 borderRadius: 999,
                 overflow: "hidden",
               }}
@@ -327,9 +327,9 @@ export default function UploadPage() {
       </div>
 
       {loadingDocs ? (
-        <div style={{ color: "#666", fontSize: 14 }}>Wczytuję…</div>
+        <div style={{ color: "var(--muted-dim)", fontSize: 14 }}>Wczytuję…</div>
       ) : docs.length === 0 ? (
-        <div style={{ color: "#666", fontSize: 14 }}>
+        <div style={{ color: "var(--muted-dim)", fontSize: 14 }}>
           Brak dokumentów. Wklej pierwszy tekst powyżej.
         </div>
       ) : (
@@ -342,14 +342,14 @@ export default function UploadPage() {
                 alignItems: "center",
                 justifyContent: "space-between",
                 gap: 12,
-                border: "1px solid #2a2a2a",
+                border: "1px solid var(--border-soft)",
                 borderRadius: 10,
                 padding: "12px 14px",
               }}
             >
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontWeight: 600, fontSize: 14 }}>{doc.title}</div>
-                <div style={{ color: "#777", fontSize: 12, marginTop: 2 }}>
+                <div style={{ color: "var(--muted-dim)", fontSize: 12, marginTop: 2 }}>
                   {doc.chunks} {doc.chunks === 1 ? "fragment" : "fragmentów"} ·{" "}
                   {formatDate(doc.createdAt)}
                 </div>
@@ -360,7 +360,7 @@ export default function UploadPage() {
                 style={{
                   padding: "6px 10px",
                   borderRadius: 8,
-                  border: "1px solid #3a2a2a",
+                  border: "1px solid var(--danger-border)",
                   background: "transparent",
                   color: "#ef4444",
                   fontSize: 13,

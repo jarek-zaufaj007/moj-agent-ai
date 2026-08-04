@@ -92,14 +92,14 @@ export function Diagnostics({
 
   // Kolor paska: 1-3 zielony, 4 żółty, 5 czerwony.
   const barColor =
-    clampedSteps >= maxSteps ? "#ef4444" : clampedSteps >= 4 ? "#eab308" : "#22c55e";
+    clampedSteps >= maxSteps ? "#ef4444" : clampedSteps >= 4 ? "var(--warn-text)" : "#22c55e";
 
   // Limit osiągnięty tylko gdy agent WYCZERPAŁ twardy limit iteracji i nie
   // zakończył końcową odpowiedzią tekstową (ostatni krok to wywołanie narzędzia).
   const hitHardLimit = rawSteps >= hardLimit && lastTextIdx < lastToolIdx;
 
   const status = isLoading
-    ? { text: "W trakcie...", color: "#eab308", icon: "⏳" }
+    ? { text: "W trakcie...", color: "var(--warn-text)", icon: "⏳" }
     : hitHardLimit
       ? { text: "Limit kroków", color: "#ef4444", icon: "⚠️" }
       : { text: "Zadanie ukończone", color: "#22c55e", icon: "✅" };
@@ -111,9 +111,9 @@ export function Diagnostics({
   return (
     <section
       style={{
-        border: "1px solid #334",
+        border: "1px solid var(--border-2)",
         borderRadius: 12,
-        background: "#0d0d18",
+        background: "var(--bg-elev)",
         padding: "12px 14px",
         display: "flex",
         flexDirection: "column",
@@ -121,16 +121,16 @@ export function Diagnostics({
         fontSize: 13,
       }}
     >
-      <div style={{ fontWeight: 700, color: "#cdd" }}>🛡️ Diagnostyka</div>
+      <div style={{ fontWeight: 700, color: "var(--muted-strong)" }}>🛡️ Diagnostyka</div>
 
       {/* Pasek kroków */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ color: "#aaa", minWidth: 52 }}>Kroki:</span>
+        <span style={{ color: "var(--muted-strong)", minWidth: 52 }}>Kroki:</span>
         <div
           style={{
             flex: 1,
             height: 8,
-            background: "#1a1a2a",
+            background: "var(--surface)",
             borderRadius: 999,
             overflow: "hidden",
           }}
@@ -144,23 +144,23 @@ export function Diagnostics({
             }}
           />
         </div>
-        <span style={{ color: "#ccc", minWidth: 34, textAlign: "right" }}>
+        <span style={{ color: "var(--muted-strong)", minWidth: 34, textAlign: "right" }}>
           {clampedSteps}/{maxSteps}
         </span>
       </div>
 
       {/* Narzędzia */}
-      <div style={{ color: "#aaa" }}>
+      <div style={{ color: "var(--muted-strong)" }}>
         Narzędzia:{" "}
-        <span style={{ color: "#ccc" }}>{toolList || "—"}</span>
+        <span style={{ color: "var(--muted-strong)" }}>{toolList || "—"}</span>
       </div>
 
       {/* Błędy + czas */}
       <div style={{ display: "flex", gap: 16 }}>
-        <span style={{ color: errors.length ? "#f87171" : "#aaa" }}>
+        <span style={{ color: errors.length ? "var(--danger-text)" : "var(--muted-strong)" }}>
           Błędy: {errors.length}
         </span>
-        <span style={{ color: "#aaa" }}>Czas: {elapsed.toFixed(1)}s</span>
+        <span style={{ color: "var(--muted-strong)" }}>Czas: {elapsed.toFixed(1)}s</span>
       </div>
 
       {/* Status */}
@@ -175,10 +175,10 @@ export function Diagnostics({
             <div
               key={i}
               style={{
-                background: "#2a1010",
-                border: "1px solid #a33",
+                background: "var(--danger-bg)",
+                border: "1px solid var(--danger-border)",
                 borderRadius: 8,
-                color: "#f0b0b0",
+                color: "var(--danger-text)",
                 padding: "6px 10px",
                 fontSize: 12,
               }}

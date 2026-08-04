@@ -179,10 +179,10 @@ export function AttachButton({
         disabled={disabled}
         title="Dodaj obraz"
         style={{
-          background: "#1a1a2a",
-          border: "1px solid #333",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
           borderRadius: 10,
-          color: "#ededed",
+          color: "var(--text)",
           padding: "0 14px",
           fontSize: 18,
           cursor: disabled ? "not-allowed" : "pointer",
@@ -209,7 +209,7 @@ export function AttachmentPreview({
   return (
     <div style={{ marginBottom: 8 }}>
       {hint && (
-        <div style={{ color: "#888", fontSize: 12, marginBottom: 6 }}>
+        <div style={{ color: "var(--muted)", fontSize: 12, marginBottom: 6 }}>
           {hint}
         </div>
       )}
@@ -224,7 +224,7 @@ export function AttachmentPreview({
                 maxHeight: 120,
                 maxWidth: 200,
                 borderRadius: 8,
-                border: "1px solid #333",
+                border: "1px solid var(--border)",
                 display: "block",
               }}
             />
@@ -239,9 +239,9 @@ export function AttachmentPreview({
                 width: 22,
                 height: 22,
                 borderRadius: "50%",
-                background: "#2a2a3a",
-                border: "1px solid #555",
-                color: "#ededed",
+                background: "var(--surface-2)",
+                border: "1px solid var(--border-2)",
+                color: "var(--text)",
                 cursor: "pointer",
                 fontSize: 12,
                 lineHeight: 1,
@@ -273,7 +273,7 @@ export function DropOverlay({ show }: { show: boolean }) {
         zIndex: 50,
         pointerEvents: "none",
         fontSize: 22,
-        color: "#ededed",
+        color: "var(--text)",
       }}
     >
       📥 Upuść obraz

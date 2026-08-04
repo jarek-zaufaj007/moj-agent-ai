@@ -59,7 +59,7 @@ export default function FormatPage() {
     >
       <header style={{ padding: "24px 0 16px", textAlign: "center" }}>
         <div style={{ fontSize: 24, fontWeight: 700 }}>📐 Formatowanie</div>
-        <div style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
           Agent odpowiada w tabeli, liście, porównaniu — na żądanie
         </div>
       </header>
@@ -75,7 +75,7 @@ export default function FormatPage() {
         }}
       >
         {messages.length === 0 && (
-          <p style={{ color: "#888", textAlign: "center", marginTop: 40 }}>
+          <p style={{ color: "var(--muted)", textAlign: "center", marginTop: 40 }}>
             Wybierz komendę poniżej albo wpisz własną (np. /tabela, /lista,
             /porownanie, /faq, /email).
           </p>
@@ -92,8 +92,8 @@ export default function FormatPage() {
                 alignSelf: isUser ? "flex-end" : "flex-start",
                 maxWidth: isUser ? "85%" : "100%",
                 width: isUser ? "auto" : "100%",
-                background: isUser ? "#2a2a3a" : "#1a1a2a",
-                border: isUser ? "none" : "1px solid #333",
+                background: isUser ? "var(--surface-2)" : "var(--surface)",
+                border: isUser ? "none" : "1px solid var(--border)",
                 borderRadius: 12,
                 padding: "10px 14px",
                 lineHeight: 1.5,
@@ -116,11 +116,11 @@ export default function FormatPage() {
           <div
             style={{
               alignSelf: "flex-start",
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 12,
               padding: "10px 14px",
-              color: "#888",
+              color: "var(--muted)",
             }}
           >
             Formatuję...
@@ -145,10 +145,10 @@ export default function FormatPage() {
             type="button"
             onClick={() => setInput(cmd)}
             style={{
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 999,
-              color: "#ededed",
+              color: "var(--text)",
               padding: "6px 14px",
               fontSize: 13,
               cursor: "pointer",
@@ -168,7 +168,7 @@ export default function FormatPage() {
           padding: "12px 0 24px",
           position: "sticky",
           bottom: 0,
-          background: "#0a0a0a",
+          background: "var(--bg)",
         }}
       >
         <input
@@ -177,10 +177,10 @@ export default function FormatPage() {
           placeholder="Wpisz komendę lub pytanie..."
           style={{
             flex: 1,
-            background: "#1a1a2a",
-            border: "1px solid #333",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "12px 14px",
             fontSize: 16,
             outline: "none",
@@ -190,10 +190,10 @@ export default function FormatPage() {
           type="submit"
           disabled={isLoading || !input.trim()}
           style={{
-            background: "#2a2a3a",
-            border: "1px solid #444",
+            background: "var(--surface-2)",
+            border: "1px solid var(--border-2)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "0 20px",
             fontSize: 16,
             cursor: isLoading || !input.trim() ? "not-allowed" : "pointer",

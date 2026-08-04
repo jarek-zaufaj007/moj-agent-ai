@@ -412,7 +412,7 @@ function renderMarkdown(md: string, forWord: boolean): string {
         : "<table>";
       const th = (c: string) =>
         forWord
-          ? `<th style="background:#f0f0f0;text-align:left">${inline(c)}</th>`
+          ? `<th style="background:var(--text);text-align:left">${inline(c)}</th>`
           : `<th>${inline(c)}</th>`;
       html.push(topen);
       html.push("<tr>" + header.map(th).join("") + "</tr>");
@@ -877,7 +877,7 @@ export default function MealPlannerPage() {
             <label className="mp-field">
               <span className="mp-label">
                 Zakupy co ile dni?{" "}
-                <span style={{ color: "#7b838a", fontWeight: 400 }}>
+                <span style={{ color: "var(--muted-dim)", fontWeight: 400 }}>
                   — dla świeżości i mniejszej liczby wizyt w sklepie
                 </span>
               </span>
@@ -1347,15 +1347,15 @@ export default function MealPlannerPage() {
           font-size: 14px;
         }
         .markdown table.mp-day td {
-          border: 1px solid #2a3140;
+          border: 1px solid var(--border-soft);
           padding: 8px 11px;
           vertical-align: top;
           text-align: left;
-          background: #0e1017;
+          background: var(--bg-elev);
         }
         .markdown table.mp-day td.mp-day-name {
-          background: #16211d;
-          color: #9de8c8;
+          background: var(--ok-bg);
+          color: var(--ok-text);
           font-weight: 700;
           text-align: center;
           vertical-align: middle;
@@ -1363,11 +1363,11 @@ export default function MealPlannerPage() {
           width: 64px;
         }
         .markdown table.mp-day td.mp-meal-head {
-          background: #1c2530;
-          color: #eef2f0;
+          background: var(--surface-2);
+          color: var(--text);
         }
         .markdown table.mp-day td.mp-meal-label {
-          color: #9aa2a8;
+          color: var(--muted);
           white-space: nowrap;
           width: 130px;
         }
@@ -1389,8 +1389,8 @@ export default function MealPlannerPage() {
           position: relative;
           overflow: hidden;
           border-radius: 20px;
-          border: 1px solid #17392c;
-          background: linear-gradient(135deg, #0e3b2b 0%, #0b2a20 55%, #0a1712 100%);
+          border: 1px solid var(--hero-border);
+          background: var(--hero-grad);
           padding: 26px 26px;
           display: flex;
           align-items: center;
@@ -1422,13 +1422,13 @@ export default function MealPlannerPage() {
           font-size: 32px;
           font-weight: 800;
           letter-spacing: -0.5px;
-          color: #f4fff9;
+          color: var(--text);
           margin: 0;
         }
         .mp-hero-sub {
           margin: 4px 0 0;
           font-size: 14px;
-          color: #9fd8c1;
+          color: var(--ok-text);
         }
         .mp-hero-badge {
           position: relative;
@@ -1448,12 +1448,12 @@ export default function MealPlannerPage() {
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 2px;
-          color: #7fdcb5;
+          color: var(--ok-text);
         }
         .mp-badge-num {
           font-size: 34px;
           font-weight: 800;
-          color: #eafff6;
+          color: var(--text);
           line-height: 1.1;
         }
 
@@ -1468,8 +1468,8 @@ export default function MealPlannerPage() {
         /* Formularz */
         .mp-form {
           border-radius: 18px;
-          border: 1px solid #1f2430;
-          background: linear-gradient(180deg, #12141c 0%, #0d0f16 100%);
+          border: 1px solid var(--border-soft);
+          background: linear-gradient(180deg, var(--surface-3) 0%, var(--bg-elev) 100%);
           padding: 22px 24px;
           display: flex;
           flex-direction: column;
@@ -1494,18 +1494,18 @@ export default function MealPlannerPage() {
           border-radius: 10px;
           background: rgba(52, 211, 153, 0.12);
           border: 1px solid rgba(52, 211, 153, 0.35);
-          color: #34d399;
+          color: var(--accent-green);
           font-size: 13px;
           font-weight: 800;
         }
         .mp-section-title {
           font-size: 17px;
           font-weight: 700;
-          color: #f2f5f4;
+          color: var(--text);
         }
         .mp-section-desc {
           font-size: 13px;
-          color: #8b9299;
+          color: var(--muted);
           margin-top: 2px;
         }
         .mp-row-2 {
@@ -1522,7 +1522,7 @@ export default function MealPlannerPage() {
         .mp-label {
           font-size: 13px;
           font-weight: 700;
-          color: #cfd6db;
+          color: var(--muted-strong);
         }
         .mp-select-wrap {
           position: relative;
@@ -1534,17 +1534,17 @@ export default function MealPlannerPage() {
           top: 50%;
           transform: translateY(-50%);
           pointer-events: none;
-          color: #7fdcb5;
+          color: var(--ok-text);
           font-size: 13px;
         }
         .mp-select {
           width: 100%;
           appearance: none;
           -webkit-appearance: none;
-          background: #0a0c11;
-          border: 1px solid #262c39;
+          background: var(--bg);
+          border: 1px solid var(--surface-2);
           border-radius: 12px;
-          color: #edf2f0;
+          color: var(--text);
           padding: 12px 34px 12px 14px;
           font-size: 15px;
           font-family: inherit;
@@ -1553,7 +1553,7 @@ export default function MealPlannerPage() {
           transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
         .mp-select:focus {
-          border-color: #34d399;
+          border-color: var(--accent-green);
           box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.12);
         }
 
@@ -1569,21 +1569,21 @@ export default function MealPlannerPage() {
           display: flex;
           flex-direction: column;
           gap: 6px;
-          background: #0a0c11;
-          border: 1px solid #262c39;
+          background: var(--bg);
+          border: 1px solid var(--surface-2);
           border-radius: 14px;
           padding: 12px 14px;
           transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
         .mp-num-tile:focus-within {
-          border-color: #34d399;
+          border-color: var(--accent-green);
           box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.12);
         }
         .mp-num-label {
           font-size: 10.5px;
           font-weight: 800;
           letter-spacing: 1px;
-          color: #7b838a;
+          color: var(--muted-dim);
         }
         .mp-num-row {
           display: flex;
@@ -1596,29 +1596,29 @@ export default function MealPlannerPage() {
           background: transparent;
           border: none;
           outline: none;
-          color: #f4f7f5;
+          color: var(--text);
           font-size: 22px;
           font-weight: 700;
           font-family: inherit;
           padding: 0;
         }
         .mp-num-input::placeholder {
-          color: #828c95;
+          color: var(--muted);
         }
         .mp-pln {
           font-size: 11px;
           font-weight: 800;
           letter-spacing: 1px;
-          color: #34d399;
+          color: var(--accent-green);
           flex-shrink: 0;
         }
 
         .mp-textarea {
           width: 100%;
-          background: #0a0c11;
-          border: 1px solid #262c39;
+          background: var(--bg);
+          border: 1px solid var(--surface-2);
           border-radius: 12px;
-          color: #edf2f0;
+          color: var(--text);
           padding: 12px 14px;
           font-size: 14px;
           line-height: 1.55;
@@ -1628,20 +1628,20 @@ export default function MealPlannerPage() {
           transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
         .mp-textarea::placeholder {
-          color: #828c95;
+          color: var(--muted);
         }
         .mp-textarea:focus {
-          border-color: #34d399;
+          border-color: var(--accent-green);
           box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.12);
         }
 
         /* Pojedyncza linia (np. „ile kg zrzucić") — wygląd jak select. */
         .mp-input-line {
           width: 100%;
-          background: #0a0c11;
-          border: 1px solid #262c39;
+          background: var(--bg);
+          border: 1px solid var(--surface-2);
           border-radius: 12px;
-          color: #edf2f0;
+          color: var(--text);
           padding: 12px 14px;
           font-size: 15px;
           font-family: inherit;
@@ -1649,10 +1649,10 @@ export default function MealPlannerPage() {
           transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
         .mp-input-line::placeholder {
-          color: #828c95;
+          color: var(--muted);
         }
         .mp-input-line:focus {
-          border-color: #34d399;
+          border-color: var(--accent-green);
           box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.12);
         }
 
@@ -1673,7 +1673,7 @@ export default function MealPlannerPage() {
         }
         .mp-reduction-hint {
           font-size: 12px;
-          color: #9fd8c1;
+          color: var(--ok-text);
           line-height: 1.5;
         }
 
@@ -1683,7 +1683,7 @@ export default function MealPlannerPage() {
           justify-content: space-between;
           gap: 12px;
           flex-wrap: wrap;
-          border-top: 1px solid #1c212b;
+          border-top: 1px solid var(--border-soft);
           padding-top: 18px;
         }
         .mp-toggles {
@@ -1692,29 +1692,29 @@ export default function MealPlannerPage() {
           flex-wrap: wrap;
         }
         .mp-toggle {
-          background: #10131a;
-          border: 1px solid #262c39;
+          background: var(--bg-elev);
+          border: 1px solid var(--surface-2);
           border-radius: 999px;
-          color: #aeb6bd;
+          color: var(--muted-strong);
           padding: 8px 14px;
           font-size: 13px;
           cursor: pointer;
           transition: all 0.15s ease;
         }
         .mp-toggle:hover {
-          border-color: #3a4453;
+          border-color: var(--border-2);
         }
         .mp-toggle.on {
           background: rgba(52, 211, 153, 0.12);
           border-color: rgba(52, 211, 153, 0.55);
-          color: #9de8c8;
+          color: var(--ok-text);
         }
         .mp-cta {
           flex-shrink: 0;
-          background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+          background: linear-gradient(135deg, var(--accent-green) 0%, #10b981 100%);
           border: none;
           border-radius: 12px;
-          color: #04231a;
+          color: var(--accent-fg);
           font-weight: 800;
           font-size: 15px;
           padding: 13px 26px;
@@ -1735,8 +1735,8 @@ export default function MealPlannerPage() {
         /* Szybki start */
         .mp-side {
           border-radius: 18px;
-          border: 1px solid #1f2430;
-          background: linear-gradient(180deg, #101219 0%, #0c0e14 100%);
+          border: 1px solid var(--border-soft);
+          background: linear-gradient(180deg, var(--surface-3) 0%, var(--bg-elev) 100%);
           padding: 20px 18px;
           position: sticky;
           top: 16px;
@@ -1745,17 +1745,17 @@ export default function MealPlannerPage() {
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 2px;
-          color: #34d399;
+          color: var(--accent-green);
         }
         .mp-side-title {
           font-size: 18px;
           font-weight: 700;
-          color: #f2f5f4;
+          color: var(--text);
           margin: 6px 0 3px;
         }
         .mp-side-desc {
           font-size: 12.5px;
-          color: #8b9299;
+          color: var(--muted);
           margin: 0 0 14px;
           line-height: 1.5;
         }
@@ -1769,8 +1769,8 @@ export default function MealPlannerPage() {
           align-items: center;
           gap: 11px;
           text-align: left;
-          background: #0e1017;
-          border: 1px solid #232937;
+          background: var(--bg-elev);
+          border: 1px solid var(--surface-2);
           border-radius: 14px;
           padding: 12px 13px;
           cursor: pointer;
@@ -1778,8 +1778,8 @@ export default function MealPlannerPage() {
           transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
         }
         .mp-scenario:hover {
-          border-color: #34d399;
-          background: #0f1a16;
+          border-color: var(--accent-green);
+          background: var(--ok-bg);
           transform: translateY(-2px);
         }
         .mp-scenario-emoji {
@@ -1802,15 +1802,15 @@ export default function MealPlannerPage() {
         .mp-scenario-title {
           font-size: 14px;
           font-weight: 700;
-          color: #eef2f0;
+          color: var(--text);
         }
         .mp-scenario-meta {
           font-size: 11.5px;
-          color: #8b9299;
+          color: var(--muted);
           margin-top: 2px;
         }
         .mp-scenario-arrow {
-          color: #34d399;
+          color: var(--accent-green);
           font-size: 17px;
           opacity: 0.7;
           transition: transform 0.15s ease;
@@ -1822,7 +1822,7 @@ export default function MealPlannerPage() {
         .mp-note {
           margin-top: 14px;
           font-size: 12px;
-          color: #c9b78a;
+          color: var(--warn-text);
           background: rgba(191, 149, 63, 0.08);
           border: 1px solid rgba(191, 149, 63, 0.28);
           border-radius: 12px;
@@ -1833,26 +1833,26 @@ export default function MealPlannerPage() {
         /* Zapisane plany */
         .mp-ghost {
           background: transparent;
-          border: 1px solid #262c39;
+          border: 1px solid var(--surface-2);
           border-radius: 10px;
-          color: #cdd3d8;
+          color: var(--muted-strong);
           padding: 8px 14px;
           font-size: 13px;
           cursor: pointer;
           transition: border-color 0.15s ease;
         }
         .mp-ghost:hover {
-          border-color: #3a4453;
+          border-color: var(--border-2);
         }
         .mp-saved-list {
           margin-top: 10px;
-          border: 1px solid #232937;
+          border: 1px solid var(--surface-2);
           border-radius: 12px;
           overflow: hidden;
         }
         .mp-saved-empty {
           padding: 14px 16px;
-          color: #8b9299;
+          color: var(--muted);
           font-size: 13px;
         }
         .mp-saved-row {
@@ -1860,7 +1860,7 @@ export default function MealPlannerPage() {
           align-items: center;
           gap: 8px;
           padding: 11px 14px;
-          border-bottom: 1px solid #1a1f28;
+          border-bottom: 1px solid var(--border-soft);
           cursor: pointer;
           transition: background 0.12s ease;
         }
@@ -1869,18 +1869,18 @@ export default function MealPlannerPage() {
         }
         .mp-saved-row:hover,
         .mp-saved-row.active {
-          background: #10141b;
+          background: var(--surface-3);
         }
         .mp-saved-title {
           font-size: 14px;
-          color: #edf2f0;
+          color: var(--text);
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
         }
         .mp-saved-date {
           font-size: 11px;
-          color: #8b9299;
+          color: var(--muted);
           margin-top: 1px;
         }
         .mp-icon-btn {
@@ -1891,12 +1891,12 @@ export default function MealPlannerPage() {
           cursor: pointer;
         }
         .mp-icon-btn.blue {
-          border: 1px solid #24384a;
-          color: #8fbcf0;
+          border: 1px solid var(--border-2);
+          color: var(--accent-link);
         }
         .mp-icon-btn.red {
-          border: 1px solid #3a2a2a;
-          color: #f0a0a0;
+          border: 1px solid var(--danger-border);
+          color: var(--danger-text);
         }
 
         /* Wynik */
@@ -1913,7 +1913,7 @@ export default function MealPlannerPage() {
         }
         .mp-act {
           font-size: 11px;
-          color: #d4e9df;
+          color: var(--muted-strong);
           background: rgba(52, 211, 153, 0.08);
           border: 1px solid rgba(52, 211, 153, 0.4);
           border-radius: 999px;
@@ -1925,11 +1925,11 @@ export default function MealPlannerPage() {
           display: flex;
           align-items: center;
           gap: 10px;
-          background: #101219;
-          border: 1px solid #232937;
+          background: var(--surface-3);
+          border: 1px solid var(--surface-2);
           border-radius: 12px;
           padding: 12px 16px;
-          color: #9aa2a8;
+          color: var(--muted);
           font-size: 14px;
         }
         .mp-spinner {
@@ -1937,7 +1937,7 @@ export default function MealPlannerPage() {
           height: 15px;
           border-radius: 50%;
           border: 2px solid rgba(52, 211, 153, 0.25);
-          border-top-color: #34d399;
+          border-top-color: var(--accent-green);
           animation: mp-spin 0.7s linear infinite;
           display: inline-block;
         }
@@ -1954,17 +1954,17 @@ export default function MealPlannerPage() {
           margin-bottom: 12px;
         }
         .mp-chip {
-          background: #12141c;
-          border: 1px solid #262c39;
+          background: var(--surface-3);
+          border: 1px solid var(--surface-2);
           border-radius: 9px;
-          color: #edf2f0;
+          color: var(--text);
           padding: 7px 15px;
           font-size: 13px;
           cursor: pointer;
           transition: border-color 0.15s ease, background 0.15s ease;
         }
         .mp-chip:hover:not(:disabled) {
-          border-color: #3a4453;
+          border-color: var(--border-2);
         }
         .mp-chip:disabled {
           cursor: not-allowed;
@@ -1973,20 +1973,20 @@ export default function MealPlannerPage() {
         .mp-chip.ok {
           background: rgba(52, 211, 153, 0.1);
           border-color: rgba(52, 211, 153, 0.5);
-          color: #9de8c8;
+          color: var(--ok-text);
         }
         .mp-error {
-          background: #2a1a1a;
-          border: 1px solid #a33;
+          background: var(--danger-bg);
+          border: 1px solid var(--danger-border);
           border-radius: 10px;
-          color: #f0b0b0;
+          color: var(--danger-text);
           padding: 9px 13px;
           font-size: 13px;
           margin-bottom: 12px;
         }
         .mp-article {
-          background: linear-gradient(180deg, #101219 0%, #0c0e14 100%);
-          border: 1px solid #232937;
+          background: linear-gradient(180deg, var(--surface-3) 0%, var(--bg-elev) 100%);
+          border: 1px solid var(--surface-2);
           border-radius: 16px;
           padding: 22px 26px;
           line-height: 1.65;
@@ -1997,12 +1997,12 @@ export default function MealPlannerPage() {
           flex-direction: column;
           gap: 4px;
           font-size: 12px;
-          color: #8b9299;
+          color: var(--muted);
           padding-left: 2px;
           margin-top: 12px;
         }
         .mp-sources a {
-          color: #34d399;
+          color: var(--accent-green);
           text-decoration: none;
         }
 
@@ -2018,8 +2018,8 @@ export default function MealPlannerPage() {
           z-index: 200;
         }
         .mp-modal {
-          background: #0b0d13;
-          border: 1px solid #232937;
+          background: var(--bg-elev);
+          border: 1px solid var(--surface-2);
           border-radius: 16px;
           width: 100%;
           max-width: 840px;
@@ -2034,20 +2034,20 @@ export default function MealPlannerPage() {
           align-items: center;
           gap: 10px;
           padding: 15px 20px;
-          border-bottom: 1px solid #1c222c;
+          border-bottom: 1px solid var(--border-soft);
           flex-shrink: 0;
         }
         .mp-modal-title {
           font-size: 15px;
           font-weight: 700;
-          color: #edf2f0;
+          color: var(--text);
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
         }
         .mp-modal-date {
           font-size: 11px;
-          color: #8b9299;
+          color: var(--muted);
           margin-top: 1px;
         }
         .mp-modal-body {

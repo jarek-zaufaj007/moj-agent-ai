@@ -151,7 +151,7 @@ function markdownToHtml(md: string): string {
           header
             .map(
               (c) =>
-                `<th style="background:#f0f0f0;text-align:left">${inline(c)}</th>`,
+                `<th style="background:var(--text);text-align:left">${inline(c)}</th>`,
             )
             .join("") +
           "</tr>",
@@ -412,10 +412,10 @@ export default function CompetitorPage() {
   const inputStyle: React.CSSProperties = {
     flex: 1,
     minWidth: 150,
-    background: "#1a1a2a",
-    border: "1px solid #333",
+    background: "var(--surface)",
+    border: "1px solid var(--border)",
     borderRadius: 10,
-    color: "#ededed",
+    color: "var(--text)",
     padding: "12px 14px",
     fontSize: 15,
     outline: "none",
@@ -434,7 +434,7 @@ export default function CompetitorPage() {
     >
       <header style={{ padding: "24px 0 12px", textAlign: "center" }}>
         <div style={{ fontSize: 24, fontWeight: 700 }}>🏢 Analiza konkurencji</div>
-        <div style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
           Podaj firmy — agent porówna je za Ciebie
         </div>
       </header>
@@ -471,10 +471,10 @@ export default function CompetitorPage() {
           placeholder="Kontekst (opcjonalnie) — np. Szukam platformy e-commerce dla małego sklepu"
           rows={2}
           style={{
-            background: "#1a1a2a",
-            border: "1px solid #333",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "10px 14px",
             fontSize: 14,
             outline: "none",
@@ -487,10 +487,10 @@ export default function CompetitorPage() {
           type="submit"
           disabled={!canCompare}
           style={{
-            background: "#2a2a3a",
-            border: "1px solid #444",
+            background: "var(--surface-2)",
+            border: "1px solid var(--border-2)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "12px 20px",
             fontSize: 15,
             alignSelf: "flex-start",
@@ -508,9 +508,9 @@ export default function CompetitorPage() {
           onClick={() => setPanelOpen((v) => !v)}
           style={{
             background: "transparent",
-            border: "1px solid #333",
+            border: "1px solid var(--border)",
             borderRadius: 8,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "5px 12px",
             fontSize: 13,
             cursor: "pointer",
@@ -524,17 +524,17 @@ export default function CompetitorPage() {
           <div
             style={{
               marginTop: 8,
-              border: "1px solid #333",
+              border: "1px solid var(--border)",
               borderRadius: 10,
               overflow: "hidden",
             }}
           >
             {!user ? (
-              <div style={{ padding: "12px 14px", color: "#888", fontSize: 13 }}>
+              <div style={{ padding: "12px 14px", color: "var(--muted)", fontSize: 13 }}>
                 Zaloguj się, aby zapisywać i przeglądać analizy.
               </div>
             ) : saved.length === 0 ? (
-              <div style={{ padding: "12px 14px", color: "#888", fontSize: 13 }}>
+              <div style={{ padding: "12px 14px", color: "var(--muted)", fontSize: 13 }}>
                 Brak zapisanych analiz. Wygeneruj analizę i kliknij „💾 Zapisz w
                 bazie".
               </div>
@@ -549,16 +549,16 @@ export default function CompetitorPage() {
                     alignItems: "center",
                     gap: 8,
                     padding: "10px 14px",
-                    borderBottom: "1px solid #222",
+                    borderBottom: "1px solid var(--border-soft)",
                     cursor: "pointer",
-                    background: preview?.id === r.id ? "#15151f" : "transparent",
+                    background: preview?.id === r.id ? "var(--surface-3)" : "transparent",
                   }}
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
                         fontSize: 14,
-                        color: "#ededed",
+                        color: "var(--text)",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
@@ -566,7 +566,7 @@ export default function CompetitorPage() {
                     >
                       {r.title}
                     </div>
-                    <div style={{ fontSize: 11, color: "#777" }}>
+                    <div style={{ fontSize: 11, color: "var(--muted-dim)" }}>
                       {new Date(r.created_at).toLocaleString("pl-PL")}
                     </div>
                   </div>
@@ -578,9 +578,9 @@ export default function CompetitorPage() {
                     title="Eksport do Word"
                     style={{
                       background: "transparent",
-                      border: "1px solid #2a3a4a",
+                      border: "1px solid var(--border-2)",
                       borderRadius: 6,
-                      color: "#8fbcf0",
+                      color: "var(--accent-link)",
                       padding: "2px 8px",
                       fontSize: 12,
                       cursor: "pointer",
@@ -593,9 +593,9 @@ export default function CompetitorPage() {
                     title="Usuń"
                     style={{
                       background: "transparent",
-                      border: "1px solid #3a2a2a",
+                      border: "1px solid var(--danger-border)",
                       borderRadius: 6,
-                      color: "#f0a0a0",
+                      color: "var(--danger-text)",
                       padding: "2px 8px",
                       fontSize: 12,
                       cursor: "pointer",
@@ -623,7 +623,7 @@ export default function CompetitorPage() {
         {/* Ekran startowy z przykładami */}
         {messages.length === 0 && (
           <div style={{ marginTop: 12 }}>
-            <p style={{ color: "#888", textAlign: "center", marginBottom: 12 }}>
+            <p style={{ color: "var(--muted)", textAlign: "center", marginBottom: 12 }}>
               Wybierz przykład lub wpisz własne firmy:
             </p>
             <div
@@ -639,10 +639,10 @@ export default function CompetitorPage() {
                   key={firms.join("-")}
                   onClick={() => useExample(firms)}
                   style={{
-                    background: "#1a1a2a",
-                    border: "1px solid #333",
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
                     borderRadius: 10,
-                    color: "#ededed",
+                    color: "var(--text)",
                     padding: "8px 12px",
                     fontSize: 13,
                     cursor: "pointer",
@@ -664,8 +664,8 @@ export default function CompetitorPage() {
                 key={i}
                 style={{
                   fontSize: 11,
-                  color: "#ddd",
-                  background: "#1a1a2a",
+                  color: "var(--muted-strong)",
+                  background: "var(--surface)",
                   border: "1px solid #3b82f6",
                   borderRadius: 999,
                   padding: "2px 10px",
@@ -686,10 +686,10 @@ export default function CompetitorPage() {
               <button
                 onClick={copyAnalysis}
                 style={{
-                  background: copied ? "#1a2a1a" : "#1a1a2a",
-                  border: `1px solid ${copied ? "#3a7a3a" : "#333"}`,
+                  background: copied ? "var(--ok-bg)" : "var(--surface)",
+                  border: `1px solid ${copied ? "var(--ok-border)" : "var(--border)"}`,
                   borderRadius: 8,
-                  color: copied ? "#9de89d" : "#ededed",
+                  color: copied ? "var(--ok-text)" : "var(--text)",
                   padding: "6px 14px",
                   fontSize: 13,
                   cursor: "pointer",
@@ -704,10 +704,10 @@ export default function CompetitorPage() {
                 disabled={!canSave || saving}
                 title={!user ? "Zaloguj się, aby zapisać" : undefined}
                 style={{
-                  background: savedId ? "#1a2a1a" : "#1a1a2a",
-                  border: `1px solid ${savedId ? "#3a7a3a" : "#333"}`,
+                  background: savedId ? "var(--ok-bg)" : "var(--surface)",
+                  border: `1px solid ${savedId ? "var(--ok-border)" : "var(--border)"}`,
                   borderRadius: 8,
-                  color: savedId ? "#9de89d" : "#ededed",
+                  color: savedId ? "var(--ok-text)" : "var(--text)",
                   padding: "6px 14px",
                   fontSize: 13,
                   cursor: !canSave || saving ? "not-allowed" : "pointer",
@@ -727,10 +727,10 @@ export default function CompetitorPage() {
                   downloadWord(display.text, companies || "Analiza konkurencji")
                 }
                 style={{
-                  background: "#1a1a2a",
-                  border: "1px solid #333",
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
                   borderRadius: 8,
-                  color: "#ededed",
+                  color: "var(--text)",
                   padding: "6px 14px",
                   fontSize: 13,
                   cursor: "pointer",
@@ -743,10 +743,10 @@ export default function CompetitorPage() {
             {saveError && (
               <div
                 style={{
-                  background: "#2a1a1a",
-                  border: "1px solid #a33",
+                  background: "var(--danger-bg)",
+                  border: "1px solid var(--danger-border)",
                   borderRadius: 10,
-                  color: "#f0b0b0",
+                  color: "var(--danger-text)",
                   padding: "8px 12px",
                   fontSize: 13,
                 }}
@@ -757,8 +757,8 @@ export default function CompetitorPage() {
 
             <article
               style={{
-                background: "#101018",
-                border: "1px solid #333",
+                background: "var(--surface-3)",
+                border: "1px solid var(--border)",
                 borderRadius: 12,
                 padding: "20px 24px",
                 lineHeight: 1.6,
@@ -779,7 +779,7 @@ export default function CompetitorPage() {
                   flexDirection: "column",
                   gap: 4,
                   fontSize: 12,
-                  color: "#888",
+                  color: "var(--muted)",
                   paddingLeft: 2,
                 }}
               >
@@ -805,11 +805,11 @@ export default function CompetitorPage() {
           <div
             style={{
               alignSelf: "flex-start",
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 12,
               padding: "10px 14px",
-              color: "#888",
+              color: "var(--muted)",
             }}
           >
             🔍 Agent zbiera informacje o firmach i porównuje...
@@ -837,8 +837,8 @@ export default function CompetitorPage() {
           <div
             onClick={(e) => e.stopPropagation()} // klik w okno nie zamyka
             style={{
-              background: "#0f0f17",
-              border: "1px solid #333",
+              background: "var(--bg-elev)",
+              border: "1px solid var(--border)",
               borderRadius: 14,
               width: "100%",
               maxWidth: 820,
@@ -856,7 +856,7 @@ export default function CompetitorPage() {
                 alignItems: "center",
                 gap: 10,
                 padding: "14px 18px",
-                borderBottom: "1px solid #262636",
+                borderBottom: "1px solid var(--border-soft)",
                 flexShrink: 0,
               }}
             >
@@ -865,7 +865,7 @@ export default function CompetitorPage() {
                   style={{
                     fontSize: 15,
                     fontWeight: 600,
-                    color: "#ededed",
+                    color: "var(--text)",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
@@ -874,17 +874,17 @@ export default function CompetitorPage() {
                 >
                   🏢 {preview.title}
                 </div>
-                <div style={{ fontSize: 11, color: "#777" }}>
+                <div style={{ fontSize: 11, color: "var(--muted-dim)" }}>
                   {new Date(preview.created_at).toLocaleString("pl-PL")}
                 </div>
               </div>
               <button
                 onClick={() => downloadWord(preview.content, preview.title)}
                 style={{
-                  background: "#1a1a2a",
-                  border: "1px solid #333",
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
                   borderRadius: 8,
-                  color: "#ededed",
+                  color: "var(--text)",
                   padding: "5px 10px",
                   fontSize: 12,
                   cursor: "pointer",
@@ -897,9 +897,9 @@ export default function CompetitorPage() {
                 aria-label="Zamknij"
                 style={{
                   background: "transparent",
-                  border: "1px solid #333",
+                  border: "1px solid var(--border)",
                   borderRadius: 8,
-                  color: "#ededed",
+                  color: "var(--text)",
                   padding: "5px 10px",
                   fontSize: 14,
                   cursor: "pointer",

@@ -118,7 +118,7 @@ export default function SearchPage() {
         <div style={{ fontSize: 24, fontWeight: 700 }}>
           🌐 Agent z wyszukiwarką
         </div>
-        <div style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
           Przeszukuję prawdziwy internet i czytam strony
         </div>
       </header>
@@ -138,9 +138,9 @@ export default function SearchPage() {
           disabled={messages.length === 0}
           style={{
             background: "transparent",
-            border: "1px solid #333",
+            border: "1px solid var(--border)",
             borderRadius: 8,
-            color: messages.length === 0 ? "#555" : "#ededed",
+            color: messages.length === 0 ? "var(--border-2)" : "var(--text)",
             padding: "4px 12px",
             cursor: messages.length === 0 ? "not-allowed" : "pointer",
             fontSize: 13,
@@ -163,7 +163,7 @@ export default function SearchPage() {
         {messages.length === 0 && (
           <div style={{ marginTop: 24 }}>
             <p
-              style={{ color: "#888", textAlign: "center", marginBottom: 12 }}
+              style={{ color: "var(--muted)", textAlign: "center", marginBottom: 12 }}
             >
               Zapytaj o cokolwiek aktualnego...
             </p>
@@ -180,10 +180,10 @@ export default function SearchPage() {
                   key={q}
                   onClick={() => send(q)}
                   style={{
-                    background: "#1a1a2a",
-                    border: "1px solid #333",
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
                     borderRadius: 10,
-                    color: "#ededed",
+                    color: "var(--text)",
                     padding: "8px 12px",
                     fontSize: 13,
                     cursor: "pointer",
@@ -223,8 +223,8 @@ export default function SearchPage() {
                   key={`read-${i}`}
                   style={{
                     fontSize: 11,
-                    color: "#ddd",
-                    background: "#1a1a2a",
+                    color: "var(--muted-strong)",
+                    background: "var(--surface)",
                     border: "1px solid #3b82f6",
                     borderRadius: 999,
                     padding: "1px 8px",
@@ -246,7 +246,7 @@ export default function SearchPage() {
                         maxHeight: 160,
                         maxWidth: 240,
                         borderRadius: 10,
-                        border: "1px solid #333",
+                        border: "1px solid var(--border)",
                       }}
                     />
                   ))}
@@ -256,8 +256,8 @@ export default function SearchPage() {
               {text && (
               <div
                 style={{
-                  background: isUser ? "#2a2a3a" : "#1a1a2a",
-                  border: isUser ? "none" : "1px solid #333",
+                  background: isUser ? "var(--surface-2)" : "var(--surface)",
+                  border: isUser ? "none" : "1px solid var(--border)",
                   borderRadius: 12,
                   padding: "10px 14px",
                   lineHeight: 1.5,
@@ -283,7 +283,7 @@ export default function SearchPage() {
                     flexDirection: "column",
                     gap: 4,
                     fontSize: 12,
-                    color: "#888",
+                    color: "var(--muted)",
                     paddingLeft: 2,
                   }}
                 >
@@ -309,11 +309,11 @@ export default function SearchPage() {
           <div
             style={{
               alignSelf: "flex-start",
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 12,
               padding: "10px 14px",
-              color: "#888",
+              color: "var(--muted)",
             }}
           >
             🔍 Szukam w internecie...
@@ -327,17 +327,17 @@ export default function SearchPage() {
         style={{
           position: "sticky",
           bottom: 0,
-          background: "#0a0a0a",
+          background: "var(--bg)",
           paddingBottom: 24,
         }}
       >
         {attach.error && (
           <div
             style={{
-              background: "#2a1a1a",
-              border: "1px solid #a33",
+              background: "var(--danger-bg)",
+              border: "1px solid var(--danger-border)",
               borderRadius: 10,
-              color: "#f0b0b0",
+              color: "var(--danger-text)",
               padding: "8px 12px",
               fontSize: 13,
               marginBottom: 8,
@@ -359,10 +359,10 @@ export default function SearchPage() {
             placeholder="Zapytaj o cokolwiek aktualnego..."
             style={{
               flex: 1,
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 10,
-              color: "#ededed",
+              color: "var(--text)",
               padding: "12px 14px",
               fontSize: 16,
               outline: "none",
@@ -372,10 +372,10 @@ export default function SearchPage() {
             type="submit"
             disabled={isLoading || !input.trim()}
             style={{
-              background: "#2a2a3a",
-              border: "1px solid #444",
+              background: "var(--surface-2)",
+              border: "1px solid var(--border-2)",
               borderRadius: 10,
-              color: "#ededed",
+              color: "var(--text)",
               padding: "0 20px",
               fontSize: 16,
               cursor: isLoading || !input.trim() ? "not-allowed" : "pointer",

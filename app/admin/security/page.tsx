@@ -298,13 +298,13 @@ export default function SecurityPage() {
         }
         .sec-sub {
           margin: 0;
-          color: #8a8a9a;
+          color: var(--muted);
           font-size: 14px;
         }
         .sec-refresh {
-          background: #1a1a26;
-          border: 1px solid #2c2c42;
-          color: #c5c5d5;
+          background: var(--surface);
+          border: 1px solid var(--surface-2);
+          color: var(--muted-strong);
           border-radius: 10px;
           padding: 10px 16px;
           font: inherit;
@@ -327,25 +327,25 @@ export default function SecurityPage() {
           font-size: 14px;
         }
         .sec-error {
-          background: #2a1a1a;
-          border: 1px solid #5a2a2a;
-          color: #f0a0a0;
+          background: var(--danger-bg);
+          border: 1px solid var(--danger-border);
+          color: var(--danger-text);
         }
         .sec-warn {
-          background: #241f14;
-          border: 1px solid #4a3a1a;
-          color: #e8c07a;
+          background: var(--warn-bg);
+          border: 1px solid var(--warn-bg);
+          color: var(--warn-text);
         }
         .sec-muted {
-          color: #8a8a9a;
+          color: var(--muted);
           padding: 12px 0;
           font-size: 14px;
         }
         .sec-ok {
-          color: #6ecf9a;
+          color: var(--ok-text);
           font-size: 14px;
           padding: 14px 16px;
-          border: 1px dashed #234a34;
+          border: 1px dashed var(--ok-border);
           border-radius: 12px;
         }
 
@@ -368,7 +368,7 @@ export default function SecurityPage() {
         .sec-note {
           font-weight: 400;
           font-size: 13px;
-          color: #8a8a9a;
+          color: var(--muted);
         }
 
         /* Alerty */
@@ -384,16 +384,16 @@ export default function SecurityPage() {
           gap: 12px;
           padding: 12px 14px;
           border-radius: 12px;
-          border: 1px solid #2a2a3a;
-          background: #14141c;
+          border: 1px solid var(--surface-2);
+          background: var(--surface-3);
         }
         .sec-alert.red {
-          border-color: #5a2a2a;
-          background: #1d1214;
+          border-color: var(--danger-border);
+          background: var(--danger-bg);
         }
         .sec-alert.amber {
-          border-color: #4a3a1a;
-          background: #1c1810;
+          border-color: var(--warn-bg);
+          background: var(--warn-bg);
         }
         .sec-alert-icon {
           font-size: 18px;
@@ -415,7 +415,7 @@ export default function SecurityPage() {
 
         /* Tabela top 5 */
         .sec-table {
-          border: 1px solid #23233a;
+          border: 1px solid var(--surface-2);
           border-radius: 14px;
           overflow: hidden;
         }
@@ -426,12 +426,12 @@ export default function SecurityPage() {
           align-items: center;
           padding: 12px 16px;
           font-size: 14px;
-          border-top: 1px solid #1e1e2e;
+          border-top: 1px solid var(--border-soft);
         }
         .sec-row-head {
           border-top: none;
-          background: #12121c;
-          color: #8a8a9a;
+          background: var(--surface-3);
+          color: var(--muted);
           font-size: 12px;
           text-transform: uppercase;
           letter-spacing: 0.04em;
@@ -453,7 +453,7 @@ export default function SecurityPage() {
         .sec-bar {
           flex: 1;
           height: 8px;
-          background: #1e1e2e;
+          background: var(--border-soft);
           border-radius: 999px;
           overflow: hidden;
         }
@@ -470,7 +470,7 @@ export default function SecurityPage() {
         }
         .sec-pct {
           font-size: 12px;
-          color: #8a8a9a;
+          color: var(--muted);
           font-variant-numeric: tabular-nums;
           min-width: 34px;
           text-align: right;
@@ -483,8 +483,8 @@ export default function SecurityPage() {
           gap: 10px;
         }
         .sec-log {
-          background: #14141c;
-          border: 1px solid #23233a;
+          background: var(--surface-3);
+          border: 1px solid var(--surface-2);
           border-left: 3px solid #e05a5a;
           border-radius: 12px;
           padding: 12px 14px;
@@ -502,9 +502,9 @@ export default function SecurityPage() {
         }
         .sec-log-reason {
           font-size: 12px;
-          color: #f0a0a0;
-          background: #2a1a1a;
-          border: 1px solid #4a2626;
+          color: var(--danger-text);
+          background: var(--danger-bg);
+          border: 1px solid var(--danger-border);
           border-radius: 999px;
           padding: 2px 10px;
         }
@@ -515,13 +515,13 @@ export default function SecurityPage() {
         }
         .sec-log-text {
           font-size: 13px;
-          color: #b5b5c5;
+          color: var(--muted-strong);
           line-height: 1.5;
           word-break: break-word;
         }
         .sec-log-meta {
           font-size: 12px;
-          color: #6a6a7a;
+          color: var(--muted-dim);
           margin-top: 6px;
         }
 
@@ -559,17 +559,17 @@ function Tile({
 
       <style jsx>{`
         .tile {
-          background: #14141c;
-          border: 1px solid #23233a;
+          background: var(--surface-3);
+          border: 1px solid var(--surface-2);
           border-radius: 14px;
           padding: 14px 16px;
         }
         .tile-red {
-          border-color: #4a2626;
+          border-color: var(--danger-border);
         }
         .tile-label {
           font-size: 12px;
-          color: #8a8a9a;
+          color: var(--muted);
           text-transform: uppercase;
           letter-spacing: 0.04em;
         }
@@ -581,7 +581,7 @@ function Tile({
         }
         .tile-note {
           font-size: 12px;
-          color: #6a6a7a;
+          color: var(--muted-dim);
         }
       `}</style>
     </div>

@@ -120,7 +120,7 @@ export default function ExtractPage() {
       <DropOverlay show={attach.dragging} />
       <header style={{ padding: "24px 0 12px", textAlign: "center" }}>
         <div style={{ fontSize: 24, fontWeight: 700 }}>📊 Analizator</div>
-        <div style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
           Wyciąga dane ustrukturyzowane z tekstu lub obrazu (JSON + tabela)
         </div>
       </header>
@@ -136,9 +136,9 @@ export default function ExtractPage() {
           disabled={messages.length === 0}
           style={{
             background: "transparent",
-            border: "1px solid #333",
+            border: "1px solid var(--border)",
             borderRadius: 8,
-            color: messages.length === 0 ? "#555" : "#ededed",
+            color: messages.length === 0 ? "var(--border-2)" : "var(--text)",
             padding: "4px 12px",
             cursor: messages.length === 0 ? "not-allowed" : "pointer",
             fontSize: 13,
@@ -161,7 +161,7 @@ export default function ExtractPage() {
         {messages.length === 0 && (
           <div style={{ marginTop: 8 }}>
             <p
-              style={{ color: "#888", textAlign: "center", marginBottom: 12 }}
+              style={{ color: "var(--muted)", textAlign: "center", marginBottom: 12 }}
             >
               Wklej tekst, wgraj/wklej obraz (Ctrl+V) albo wypróbuj przykład:
             </p>
@@ -178,10 +178,10 @@ export default function ExtractPage() {
                   key={ex.label}
                   onClick={() => send(ex.text)}
                   style={{
-                    background: "#1a1a2a",
-                    border: "1px solid #333",
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
                     borderRadius: 10,
-                    color: "#ededed",
+                    color: "var(--text)",
                     padding: "8px 12px",
                     fontSize: 13,
                     cursor: "pointer",
@@ -227,7 +227,7 @@ export default function ExtractPage() {
                         maxHeight: 180,
                         maxWidth: 260,
                         borderRadius: 10,
-                        border: "1px solid #333",
+                        border: "1px solid var(--border)",
                       }}
                     />
                   ))}
@@ -237,8 +237,8 @@ export default function ExtractPage() {
               {text && (
                 <div
                   style={{
-                    background: isUser ? "#2a2a3a" : "#1a1a2a",
-                    border: isUser ? "none" : "1px solid #333",
+                    background: isUser ? "var(--surface-2)" : "var(--surface)",
+                    border: isUser ? "none" : "1px solid var(--border)",
                     borderRadius: 12,
                     padding: "10px 14px",
                     lineHeight: 1.5,
@@ -262,10 +262,10 @@ export default function ExtractPage() {
                 <button
                   onClick={() => copyJson(text)}
                   style={{
-                    background: "#1a1a2a",
-                    border: "1px solid #333",
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
                     borderRadius: 8,
-                    color: "#ededed",
+                    color: "var(--text)",
                     padding: "4px 12px",
                     fontSize: 13,
                     cursor: "pointer",
@@ -277,7 +277,7 @@ export default function ExtractPage() {
               )}
 
               {!isUser && usedModel && (
-                <span style={{ fontSize: 11, color: "#666" }}>
+                <span style={{ fontSize: 11, color: "var(--muted-dim)" }}>
                   Model: {usedModel}
                 </span>
               )}
@@ -289,11 +289,11 @@ export default function ExtractPage() {
           <div
             style={{
               alignSelf: "flex-start",
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 12,
               padding: "10px 14px",
-              color: "#888",
+              color: "var(--muted)",
             }}
           >
             📊 Analizuję dokument...
@@ -307,17 +307,17 @@ export default function ExtractPage() {
         style={{
           position: "sticky",
           bottom: 0,
-          background: "#0a0a0a",
+          background: "var(--bg)",
           paddingBottom: 24,
         }}
       >
         {attach.error && (
           <div
             style={{
-              background: "#2a1a1a",
-              border: "1px solid #a33",
+              background: "var(--danger-bg)",
+              border: "1px solid var(--danger-border)",
               borderRadius: 10,
-              color: "#f0b0b0",
+              color: "var(--danger-text)",
               padding: "8px 12px",
               fontSize: 13,
               marginBottom: 8,
@@ -343,10 +343,10 @@ export default function ExtractPage() {
             placeholder="Wklej tekst lub obraz (Ctrl+V) do analizy..."
             style={{
               flex: 1,
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 10,
-              color: "#ededed",
+              color: "var(--text)",
               padding: "12px 14px",
               fontSize: 16,
               outline: "none",
@@ -356,10 +356,10 @@ export default function ExtractPage() {
             type="submit"
             disabled={isLoading || (!input.trim() && attach.images.length === 0)}
             style={{
-              background: "#2a2a3a",
-              border: "1px solid #444",
+              background: "var(--surface-2)",
+              border: "1px solid var(--border-2)",
               borderRadius: 10,
-              color: "#ededed",
+              color: "var(--text)",
               padding: "0 20px",
               fontSize: 16,
               cursor:

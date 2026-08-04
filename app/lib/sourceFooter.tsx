@@ -18,7 +18,7 @@ export function SourceFooter({ sources }: { sources: string[] }) {
         marginTop: 6,
         paddingLeft: 2,
         fontSize: 12,
-        color: "#777",
+        color: "var(--muted-dim)",
       }}
     >
       <span aria-hidden>📎</span>
@@ -29,12 +29,12 @@ export function SourceFooter({ sources }: { sources: string[] }) {
           href={`/knowledge?doc=${encodeURIComponent(title)}`}
           title={`Zobacz fragmenty dokumentu "${title}" w bazie wiedzy`}
           style={{
-            color: "#9ca3af",
+            color: "var(--muted)",
             textDecoration: "none",
-            border: "1px solid #2a2a2a",
+            border: "1px solid var(--border-soft)",
             borderRadius: 999,
             padding: "2px 9px",
-            background: "#141414",
+            background: "var(--surface-3)",
           }}
         >
           📄 {title}

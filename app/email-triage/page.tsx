@@ -40,7 +40,7 @@ const PRIORITY_STYLE: Record<Priority, { border: string; bg: string }> = {
   high: { border: "#c0392b", bg: "rgba(192,57,43,0.08)" },
   medium: { border: "#c9a227", bg: "rgba(201,162,39,0.08)" },
   low: { border: "#2e8b57", bg: "rgba(46,139,87,0.08)" },
-  none: { border: "#333", bg: "#1a1a2a" },
+  none: { border: "var(--border)", bg: "var(--surface)" },
 };
 
 function detectPriority(block: string): Priority {
@@ -112,10 +112,10 @@ function CopyButton({ text }: { text: string }) {
         }
       }}
       style={{
-        background: "#2a2a3a",
-        border: "1px solid #444",
+        background: "var(--surface-2)",
+        border: "1px solid var(--border-2)",
         borderRadius: 8,
-        color: "#ededed",
+        color: "var(--text)",
         padding: "5px 12px",
         fontSize: 13,
         cursor: "pointer",
@@ -196,7 +196,7 @@ export default function EmailTriagePage() {
     <div style={{ maxWidth: 820, margin: "0 auto", padding: "0 16px 48px" }}>
       <header style={{ padding: "24px 0 16px", textAlign: "center" }}>
         <div style={{ fontSize: 26, fontWeight: 700 }}>📧 E-mail Triage</div>
-        <div style={{ fontSize: 14, color: "#888", marginTop: 6 }}>
+        <div style={{ fontSize: 14, color: "var(--muted)", marginTop: 6 }}>
           Wklej maile — agent posortuje i napisze odpowiedzi
         </div>
       </header>
@@ -208,10 +208,10 @@ export default function EmailTriagePage() {
         style={{
           width: "100%",
           minHeight: 200,
-          background: "#1a1a2a",
-          border: "1px solid #333",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
           borderRadius: 12,
-          color: "#ededed",
+          color: "var(--text)",
           padding: "14px",
           fontSize: 15,
           lineHeight: 1.5,
@@ -234,10 +234,10 @@ export default function EmailTriagePage() {
           onClick={analyze}
           disabled={loading || !input.trim()}
           style={{
-            background: "#2a2a3a",
-            border: "1px solid #444",
+            background: "var(--surface-2)",
+            border: "1px solid var(--border-2)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "10px 20px",
             fontSize: 15,
             cursor: loading || !input.trim() ? "not-allowed" : "pointer",
@@ -252,10 +252,10 @@ export default function EmailTriagePage() {
           onClick={() => setInput(PRZYKLAD)}
           disabled={loading}
           style={{
-            background: "#1a1a2a",
-            border: "1px solid #333",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "10px 16px",
             fontSize: 14,
             cursor: loading ? "not-allowed" : "pointer",
@@ -273,7 +273,7 @@ export default function EmailTriagePage() {
             border: "1px solid #c0392b",
             borderRadius: 10,
             padding: "12px 14px",
-            color: "#f0a0a0",
+            color: "var(--danger-text)",
           }}
         >
           {error}
@@ -334,8 +334,8 @@ export default function EmailTriagePage() {
         <div
           style={{
             marginTop: 20,
-            border: "1px solid #333",
-            background: "#12121c",
+            border: "1px solid var(--border)",
+            background: "var(--surface-3)",
             borderRadius: 12,
             padding: "14px 18px",
           }}
@@ -348,7 +348,7 @@ export default function EmailTriagePage() {
 
       {/* Zanim pojawią się pierwsze karty — pokaż surowy strumień */}
       {loading && mails.length === 0 && (
-        <div style={{ marginTop: 24, color: "#888", textAlign: "center" }}>
+        <div style={{ marginTop: 24, color: "var(--muted)", textAlign: "center" }}>
           {output ? (
             <div className="markdown" style={{ textAlign: "left" }}>
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown>

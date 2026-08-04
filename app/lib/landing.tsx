@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ThemeToggle } from "@/app/lib/theme";
 
 // ── Landing page (Lekcja 11 / Warsztat 1) ───────────────────────────────────
 // Strona "/" dla niezalogowanych: hero + funkcje + mockupy interfejsu + CTA.
@@ -25,13 +26,13 @@ const FEATURES = [
     emoji: "🔐",
     title: "Prywatne dane per user",
     desc: "Logowanie i izolacja na poziomie bazy (RLS). Nikt poza Tobą nie zobaczy Twoich dokumentów.",
-    accent: "#34d399",
+    accent: "var(--accent-green)",
   },
   {
     emoji: "⚡",
     title: "Pracuje 24/7",
     desc: "Poranne briefingi i webhooki odpalają się same — agent działa, nawet gdy śpisz.",
-    accent: "#fbbf24",
+    accent: "var(--warn-text)",
   },
 ];
 
@@ -120,7 +121,7 @@ function SectionTitle({
           fontWeight: 700,
           letterSpacing: 1.4,
           textTransform: "uppercase",
-          color: "#7dd3fc",
+          color: "var(--accent-link)",
           marginBottom: 10,
         }}
       >
@@ -132,7 +133,7 @@ function SectionTitle({
           style={{
             margin: "12px auto 0",
             maxWidth: 620,
-            color: "#9ca3af",
+            color: "var(--muted)",
             fontSize: 16,
             lineHeight: 1.6,
           }}
@@ -181,7 +182,8 @@ export function LandingPage() {
               <a href="#demo" className="lp-nav-link lp-hide-mobile">
                 Demo
               </a>
-              <Link href="/login" className="lp-nav-link">
+              <ThemeToggle className="theme-toggle-lp" />
+              <Link href="/login" className="lp-nav-link lp-hide-narrow">
                 Zaloguj się
               </Link>
               <Link href="/login" className="lp-cta lp-cta-sm">
@@ -216,12 +218,12 @@ export function LandingPage() {
                 maxWidth: 640,
                 fontSize: 18,
                 lineHeight: 1.65,
-                color: "#9ca3af",
+                color: "var(--muted)",
               }}
             >
               Czat, baza wiedzy, raporty i automatyczne briefingi — wszystko
               w jednym miejscu. Pytasz normalnym językiem, agent odpowiada
-              z <strong style={{ color: "#e5e7eb" }}>Twoich</strong> danych
+              z <strong style={{ color: "var(--muted-strong)" }}>Twoich</strong> danych
               i pokazuje źródło.
             </p>
 
@@ -243,7 +245,7 @@ export function LandingPage() {
                 animationDelay: "320ms",
                 marginTop: 18,
                 fontSize: 13,
-                color: "#6b7280",
+                color: "var(--muted)",
               }}
             >
               Bez karty kredytowej · Konto w 30 sekund · Twoje dane zostają Twoje
@@ -257,7 +259,7 @@ export function LandingPage() {
               {STATS.map((s) => (
                 <div key={s.label} style={{ textAlign: "center" }}>
                   <div className="lp-stat-value">{s.value}</div>
-                  <div style={{ fontSize: 13, color: "#9ca3af", marginTop: 4 }}>
+                  <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
                     {s.label}
                   </div>
                 </div>
@@ -298,7 +300,7 @@ export function LandingPage() {
                     marginTop: 8,
                     fontSize: 14.5,
                     lineHeight: 1.6,
-                    color: "#9ca3af",
+                    color: "var(--muted)",
                   }}
                 >
                   {f.desc}
@@ -364,7 +366,7 @@ export function LandingPage() {
                 </div>
 
                 <div className="lp-mock-input">
-                  <span style={{ color: "#6b7280" }}>Zadaj pytanie agentowi…</span>
+                  <span style={{ color: "var(--muted)" }}>Zadaj pytanie agentowi…</span>
                   <span className="lp-mock-send">➤</span>
                 </div>
               </div>
@@ -393,7 +395,7 @@ export function LandingPage() {
                   <h3 style={{ fontSize: 15.5, fontWeight: 700 }}>
                     {m.emoji} {m.title}
                   </h3>
-                  <p style={{ marginTop: 6, fontSize: 14, color: "#9ca3af" }}>
+                  <p style={{ marginTop: 6, fontSize: 14, color: "var(--muted)" }}>
                     {m.desc}
                   </p>
                 </div>
@@ -414,7 +416,7 @@ export function LandingPage() {
               >
                 <div className="lp-step-n">{s.n}</div>
                 <h3 style={{ fontSize: 16.5, fontWeight: 700 }}>{s.title}</h3>
-                <p style={{ marginTop: 6, fontSize: 14.5, color: "#9ca3af" }}>
+                <p style={{ marginTop: 6, fontSize: 14.5, color: "var(--muted)" }}>
                   {s.desc}
                 </p>
               </div>
@@ -443,9 +445,9 @@ export function LandingPage() {
                 Stwórz konto →
               </Link>
             </div>
-            <div style={{ marginTop: 14, fontSize: 13, color: "#a5b4fc" }}>
+            <div style={{ marginTop: 14, fontSize: 13, color: "var(--muted-strong)" }}>
               Masz już konto?{" "}
-              <Link href="/login" style={{ color: "#fff", fontWeight: 600 }}>
+              <Link href="/login" style={{ color: "var(--text)", fontWeight: 600 }}>
                 Zaloguj się
               </Link>
             </div>
@@ -456,7 +458,7 @@ export function LandingPage() {
         <footer className="lp-footer">
           <div className="lp-footer-inner">
             <span style={{ fontWeight: 700 }}>🤖 Mój Agent</span>
-            <span style={{ color: "#6b7280", fontSize: 13 }}>
+            <span style={{ color: "var(--muted)", fontSize: 13 }}>
               Zbudowany na Next.js, Supabase i Gemini · {new Date().getFullYear()}
             </span>
           </div>

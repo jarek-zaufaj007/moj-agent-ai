@@ -83,7 +83,7 @@ export default function GeneratePage() {
         <div style={{ fontSize: 24, fontWeight: 700 }}>
           🎨 Generator grafik AI
         </div>
-        <div style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
           Opisz co chcesz - AI stworzy obraz w kilka sekund
         </div>
       </header>
@@ -96,10 +96,10 @@ export default function GeneratePage() {
           rows={3}
           style={{
             width: "100%",
-            background: "#1a1a2a",
-            border: "1px solid #333",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "12px 14px",
             fontSize: 15,
             outline: "none",
@@ -114,10 +114,10 @@ export default function GeneratePage() {
           style={{
             marginTop: 8,
             width: "100%",
-            background: "#2a2a3a",
-            border: "1px solid #444",
+            background: "var(--surface-2)",
+            border: "1px solid var(--border-2)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "12px 20px",
             fontSize: 16,
             cursor: loading || !prompt.trim() ? "not-allowed" : "pointer",
@@ -131,7 +131,7 @@ export default function GeneratePage() {
       {/* Przykładowe prompty */}
       {!image && !loading && (
         <div style={{ marginBottom: 16 }}>
-          <p style={{ color: "#888", fontSize: 13, marginBottom: 8 }}>
+          <p style={{ color: "var(--muted)", fontSize: 13, marginBottom: 8 }}>
             Kliknij przykład, aby zacząć:
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -143,10 +143,10 @@ export default function GeneratePage() {
                   generate(ex);
                 }}
                 style={{
-                  background: "#1a1a2a",
-                  border: "1px solid #333",
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
                   borderRadius: 10,
-                  color: "#ededed",
+                  color: "var(--text)",
                   padding: "8px 12px",
                   fontSize: 13,
                   cursor: "pointer",
@@ -170,12 +170,12 @@ export default function GeneratePage() {
             maxWidth: 512,
             margin: "0 auto",
             borderRadius: 12,
-            border: "1px solid #333",
-            background: "#1a1a2a",
+            border: "1px solid var(--border)",
+            background: "var(--surface)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: "#888",
+            color: "var(--muted)",
             fontSize: 15,
             animation: "pulse 1.5s ease-in-out infinite",
           }}
@@ -188,10 +188,10 @@ export default function GeneratePage() {
       {error && !loading && (
         <div
           style={{
-            background: "#2a1a1a",
-            border: "1px solid #a33",
+            background: "var(--danger-bg)",
+            border: "1px solid var(--danger-border)",
             borderRadius: 10,
-            color: "#f0b0b0",
+            color: "var(--danger-text)",
             padding: "12px 14px",
             fontSize: 14,
           }}
@@ -212,14 +212,14 @@ export default function GeneratePage() {
               maxWidth: 512,
               margin: "0 auto",
               borderRadius: 12,
-              border: "1px solid #333",
+              border: "1px solid var(--border)",
             }}
           />
 
           {comment && (
             <p
               style={{
-                color: "#aaa",
+                color: "var(--muted-strong)",
                 fontSize: 14,
                 textAlign: "center",
                 lineHeight: 1.5,
@@ -235,10 +235,10 @@ export default function GeneratePage() {
             <button
               onClick={download}
               style={{
-                background: "#1a2a1a",
+                background: "var(--ok-bg)",
                 border: "1px solid #2a5",
                 borderRadius: 10,
-                color: "#ededed",
+                color: "var(--text)",
                 padding: "10px 18px",
                 fontSize: 15,
                 cursor: "pointer",
@@ -250,10 +250,10 @@ export default function GeneratePage() {
               onClick={() => generate(lastPrompt)}
               disabled={loading}
               style={{
-                background: "#2a2a3a",
-                border: "1px solid #444",
+                background: "var(--surface-2)",
+                border: "1px solid var(--border-2)",
                 borderRadius: 10,
-                color: "#ededed",
+                color: "var(--text)",
                 padding: "10px 18px",
                 fontSize: 15,
                 cursor: "pointer",

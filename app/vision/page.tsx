@@ -152,7 +152,7 @@ export default function VisionPage() {
 
       <header style={{ padding: "24px 0 12px", textAlign: "center" }}>
         <div style={{ fontSize: 24, fontWeight: 700 }}>👁️ Agent Vision</div>
-        <div style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
           Wklej screenshot, wrzuć plik lub przeciągnij obraz
         </div>
       </header>
@@ -165,12 +165,12 @@ export default function VisionPage() {
           disabled={messages.length === 0 && !hasImages && !genResult}
           style={{
             background: "transparent",
-            border: "1px solid #333",
+            border: "1px solid var(--border)",
             borderRadius: 8,
             color:
               messages.length === 0 && !hasImages && !genResult
-                ? "#555"
-                : "#ededed",
+                ? "var(--border-2)"
+                : "var(--text)",
             padding: "4px 12px",
             cursor:
               messages.length === 0 && !hasImages && !genResult
@@ -200,11 +200,11 @@ export default function VisionPage() {
             tabIndex={0}
             style={{
               marginTop: 12,
-              border: "2px dashed #333",
+              border: "2px dashed var(--border)",
               borderRadius: 14,
               padding: "40px 20px",
               textAlign: "center",
-              color: "#aaa",
+              color: "var(--muted-strong)",
               cursor: "pointer",
               outline: "none",
               display: "block",
@@ -232,10 +232,10 @@ export default function VisionPage() {
         {attach.error && (
           <div
             style={{
-              background: "#2a1a1a",
-              border: "1px solid #a33",
+              background: "var(--danger-bg)",
+              border: "1px solid var(--danger-border)",
               borderRadius: 10,
-              color: "#f0b0b0",
+              color: "var(--danger-text)",
               padding: "10px 14px",
               fontSize: 14,
             }}
@@ -274,7 +274,7 @@ export default function VisionPage() {
                         maxHeight: 160,
                         maxWidth: 240,
                         borderRadius: 10,
-                        border: "1px solid #333",
+                        border: "1px solid var(--border)",
                       }}
                     />
                   ))}
@@ -283,8 +283,8 @@ export default function VisionPage() {
               {text && (
                 <div
                   style={{
-                    background: isUser ? "#2a2a3a" : "#1a1a2a",
-                    border: isUser ? "none" : "1px solid #333",
+                    background: isUser ? "var(--surface-2)" : "var(--surface)",
+                    border: isUser ? "none" : "1px solid var(--border)",
                     borderRadius: 12,
                     padding: "10px 14px",
                     lineHeight: 1.5,
@@ -310,11 +310,11 @@ export default function VisionPage() {
           <div
             style={{
               alignSelf: "flex-start",
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 12,
               padding: "10px 14px",
-              color: "#888",
+              color: "var(--muted)",
             }}
           >
             👁️ Analizuję obraz...
@@ -326,11 +326,11 @@ export default function VisionPage() {
           <div
             style={{
               alignSelf: "flex-start",
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 12,
               padding: "10px 14px",
-              color: "#888",
+              color: "var(--muted)",
             }}
           >
             🎨 Generuję podobny obraz... (5-15 sekund)
@@ -339,10 +339,10 @@ export default function VisionPage() {
         {genError && !genLoading && (
           <div
             style={{
-              background: "#2a1a1a",
-              border: "1px solid #a33",
+              background: "var(--danger-bg)",
+              border: "1px solid var(--danger-border)",
               borderRadius: 10,
-              color: "#f0b0b0",
+              color: "var(--danger-text)",
               padding: "10px 14px",
               fontSize: 14,
             }}
@@ -352,7 +352,7 @@ export default function VisionPage() {
         )}
         {genResult && !genLoading && (
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <div style={{ color: "#888", fontSize: 13 }}>
+            <div style={{ color: "var(--muted)", fontSize: 13 }}>
               Oryginał → nowy wariant:
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -366,7 +366,7 @@ export default function VisionPage() {
                     maxHeight: 260,
                     maxWidth: "48%",
                     borderRadius: 10,
-                    border: "1px solid #333",
+                    border: "1px solid var(--border)",
                   }}
                 />
               ))}
@@ -403,10 +403,10 @@ export default function VisionPage() {
                   onClick={() => (isGen ? generateSimilar() : send(q))}
                   disabled={disabled}
                   style={{
-                    background: isGen ? "#1a2a1a" : "#1a1a2a",
-                    border: `1px solid ${isGen ? "#2a5" : "#333"}`,
+                    background: isGen ? "var(--ok-bg)" : "var(--surface)",
+                    border: `1px solid ${isGen ? "#2a5" : "var(--border)"}`,
                     borderRadius: 999,
-                    color: "#ededed",
+                    color: "var(--text)",
                     padding: "6px 12px",
                     fontSize: 13,
                     cursor: disabled ? "not-allowed" : "pointer",
@@ -429,7 +429,7 @@ export default function VisionPage() {
           padding: "4px 0 24px",
           position: "sticky",
           bottom: 0,
-          background: "#0a0a0a",
+          background: "var(--bg)",
         }}
       >
         <AttachButton onFiles={(f) => void attach.addFiles(f)} />
@@ -444,10 +444,10 @@ export default function VisionPage() {
           }
           style={{
             flex: 1,
-            background: "#1a1a2a",
-            border: "1px solid #333",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "12px 14px",
             fontSize: 16,
             outline: "none",
@@ -457,10 +457,10 @@ export default function VisionPage() {
           type="submit"
           disabled={isLoading || !input.trim()}
           style={{
-            background: "#2a2a3a",
-            border: "1px solid #444",
+            background: "var(--surface-2)",
+            border: "1px solid var(--border-2)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "0 20px",
             fontSize: 16,
             cursor: isLoading || !input.trim() ? "not-allowed" : "pointer",

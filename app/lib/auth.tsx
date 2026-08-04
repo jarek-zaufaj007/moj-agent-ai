@@ -54,7 +54,7 @@ function FullscreenSpinner({ label }: { label: string }) {
       style={{
         position: "fixed",
         inset: 0,
-        background: "#0a0a0a",
+        background: "var(--bg)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -67,13 +67,13 @@ function FullscreenSpinner({ label }: { label: string }) {
         style={{
           width: 32,
           height: 32,
-          border: "3px solid #333",
+          border: "3px solid var(--border)",
           borderTopColor: "#3b82f6",
           borderRadius: "50%",
           animation: "authspin 0.8s linear infinite",
         }}
       />
-      <span style={{ color: "#888", fontSize: 14 }}>{label}</span>
+      <span style={{ color: "var(--muted)", fontSize: 14 }}>{label}</span>
       <style>{"@keyframes authspin { to { transform: rotate(360deg); } }"}</style>
     </div>
   );

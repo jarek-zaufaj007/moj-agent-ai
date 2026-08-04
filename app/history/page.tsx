@@ -148,7 +148,7 @@ export default function HistoryPage() {
         <h1 style={{ fontSize: 26, fontWeight: 700, margin: 0 }}>
           📜 Historia rozmów
         </h1>
-        <p style={{ color: "#888", marginTop: 6, fontSize: 14 }}>
+        <p style={{ color: "var(--muted)", marginTop: 6, fontSize: 14 }}>
           Wszystkie Twoje rozmowy z agentem
         </p>
       </header>
@@ -161,10 +161,10 @@ export default function HistoryPage() {
           placeholder="Szukaj w rozmowach..."
           style={{
             width: "100%",
-            background: "#1a1a2a",
-            border: "1px solid #333",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "10px 14px",
             fontSize: 15,
             outline: "none",
@@ -174,7 +174,7 @@ export default function HistoryPage() {
       )}
 
       {loading && (
-        <div style={{ color: "#888", textAlign: "center", padding: "40px 0" }}>
+        <div style={{ color: "var(--muted)", textAlign: "center", padding: "40px 0" }}>
           Wczytuję rozmowy...
         </div>
       )}
@@ -183,11 +183,11 @@ export default function HistoryPage() {
       {!loading && conversations.length === 0 && (
         <div
           style={{
-            border: "1px dashed #333",
+            border: "1px dashed var(--border)",
             borderRadius: 12,
             padding: "40px 24px",
             textAlign: "center",
-            color: "#888",
+            color: "var(--muted)",
           }}
         >
           <p style={{ marginBottom: 16 }}>
@@ -197,10 +197,10 @@ export default function HistoryPage() {
             href="/chat"
             style={{
               display: "inline-block",
-              background: "#16324f",
+              background: "var(--accent-bg)",
               border: "1px solid #3b82f6",
               borderRadius: 10,
-              color: "#ededed",
+              color: "var(--text)",
               padding: "10px 18px",
               fontSize: 14,
               textDecoration: "none",
@@ -213,7 +213,7 @@ export default function HistoryPage() {
 
       {/* Brak wyników wyszukiwania */}
       {!loading && conversations.length > 0 && filtered.length === 0 && (
-        <div style={{ color: "#888", textAlign: "center", padding: "24px 0" }}>
+        <div style={{ color: "var(--muted)", textAlign: "center", padding: "24px 0" }}>
           Brak rozmów pasujących do „{search}”.
         </div>
       )}
@@ -226,8 +226,8 @@ export default function HistoryPage() {
             className="history-card"
             style={{
               position: "relative",
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 12,
               padding: 16,
               transition: "background 0.15s, border-color 0.15s",
@@ -240,7 +240,7 @@ export default function HistoryPage() {
               <div
                 style={{
                   fontWeight: 700,
-                  color: "#fff",
+                  color: "var(--text)",
                   fontSize: 16,
                   paddingRight: 90,
                 }}
@@ -249,7 +249,7 @@ export default function HistoryPage() {
               </div>
               <div
                 style={{
-                  color: "#888",
+                  color: "var(--muted)",
                   fontSize: 12,
                   marginTop: 4,
                   display: "flex",
@@ -264,7 +264,7 @@ export default function HistoryPage() {
               {c.lastMessage && (
                 <div
                   style={{
-                    color: "#999",
+                    color: "var(--muted)",
                     fontStyle: "italic",
                     fontSize: 13,
                     marginTop: 8,
@@ -285,7 +285,7 @@ export default function HistoryPage() {
                 top: 12,
                 right: 12,
                 background: "transparent",
-                border: "1px solid #a33",
+                border: "1px solid var(--danger-border)",
                 borderRadius: 8,
                 color: "#f07070",
                 padding: "4px 10px",
@@ -306,10 +306,10 @@ export default function HistoryPage() {
             bottom: 24,
             left: "50%",
             transform: "translateX(-50%)",
-            background: "#1a1a2a",
+            background: "var(--surface)",
             border: "1px solid #61F8F8",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "10px 18px",
             fontSize: 14,
             zIndex: 60,
@@ -321,7 +321,7 @@ export default function HistoryPage() {
 
       <style>{`
         .history-card:hover {
-          background: #20203a;
+          background: var(--surface-2);
           border-color: #61F8F8;
         }
       `}</style>

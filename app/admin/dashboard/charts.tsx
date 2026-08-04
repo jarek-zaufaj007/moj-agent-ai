@@ -8,10 +8,15 @@
 // i skalują się przez viewBox, więc działają na telefonie tak samo jak na
 // monitorze.
 //
-// Kolory i rozmiary siedzą w atrybutach SVG (fill, font-size), a nie w klasach
-// CSS: styled-jsx scope'uje style do KOMPONENTU, w którym stoi znacznik <style>,
-// więc reguła napisana obok nie objęłaby elementów rysowanych przez pomocnicze
-// komponenty niżej. Atrybut działa zawsze.
+// Rozmiary siedzą w atrybutach SVG (font-size), a nie w klasach CSS: styled-jsx
+// scope'uje style do KOMPONENTU, w którym stoi znacznik <style>, więc reguła
+// napisana obok nie objęłaby elementów rysowanych przez pomocnicze komponenty
+// niżej. Atrybut działa zawsze.
+//
+// Kolory interfejsu idą przez style inline, nie przez atrybut fill/stroke —
+// zmienne CSS (var(--…), motyw ciemny/jasny) działają we właściwości stylu,
+// ale NIE w atrybucie prezentacyjnym SVG. Kolory serii zostają na sztywno:
+// są dobrane tak, żeby czytać się na obu motywach.
 
 export const CHART_COLORS = [
   "#5b6cff",
@@ -19,13 +24,13 @@ export const CHART_COLORS = [
   "#e0a63c",
   "#e05a5a",
   "#9a6cff",
-  "#6ecf9a",
+  "var(--ok-text)",
   "#e07ab0",
 ];
 
-const INK = "#8a8a9a"; // podpisy osi X
-const INK_DIM = "#6a6a7a"; // podpisy osi Y
-const GRID = "#23233a";
+const INK = { fill: "var(--muted)" }; // podpisy osi X
+const INK_DIM = { fill: "var(--muted-dim)" }; // podpisy osi Y
+const GRID = { stroke: "var(--surface-2)" };
 
 type Point = { label: string; value: number; hint?: string };
 
@@ -98,7 +103,7 @@ export function LineChart({
             cx={x(i)}
             cy={y(p.value)}
             r={4}
-            fill="#0e0e16"
+            style={{ fill: "var(--bg-elev)" }}
             stroke={color}
             strokeWidth={2}
           >
@@ -110,7 +115,7 @@ export function LineChart({
           <text
             x={x(i)}
             y={H - 10}
-            fill={INK}
+            style={INK}
             fontSize={11}
             textAnchor={i === 0 ? "start" : i === points.length - 1 ? "end" : "middle"}
           >
@@ -157,11 +162,11 @@ export function BarChart({
               <title>{p.hint ?? `${p.label}: ${p.value}`}</title>
             </rect>
             {p.value > 0 && (
-              <text x={cx} y={top - 6} fill="#c5c5d5" fontSize={11} textAnchor="middle">
+              <text x={cx} y={top - 6} style={{ fill: "var(--muted-strong)" }} fontSize={11} textAnchor="middle">
                 {short(p.value)}
               </text>
             )}
-            <text x={cx} y={H - 10} fill={INK} fontSize={11} textAnchor="middle">
+            <text x={cx} y={H - 10} style={INK} fontSize={11} textAnchor="middle">
               {p.label}
             </text>
           </g>
@@ -193,7 +198,7 @@ export function DonutChart({
   return (
     <div className="donut-wrap">
       <svg viewBox="0 0 160 160" className="donut" role="img">
-        <circle cx={80} cy={80} r={R} fill="none" stroke="#1e1e2e" strokeWidth={22} />
+        <circle cx={80} cy={80} r={R} fill="none" style={{ stroke: "var(--border-soft)" }} strokeWidth={22} />
         {slices.map((s, i) => {
           const share = total > 0 ? s.value / total : 0;
           const len = share * C;
@@ -217,10 +222,10 @@ export function DonutChart({
           offset += len;
           return el;
         })}
-        <text x={80} y={78} fill="#f0f0f5" fontSize={19} fontWeight={700} textAnchor="middle">
+        <text x={80} y={78} style={{ fill: "var(--text)" }} fontSize={19} fontWeight={700} textAnchor="middle">
           {centerLabel}
         </text>
-        <text x={80} y={95} fill={INK} fontSize={9} textAnchor="middle" letterSpacing="0.08em">
+        <text x={80} y={95} style={INK} fontSize={9} textAnchor="middle" letterSpacing="0.08em">
           {centerNote}
         </text>
       </svg>
@@ -280,10 +285,10 @@ export function DonutChart({
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-          color: #c5c5d5;
+          color: var(--muted-strong);
         }
         .legend-value {
-          color: #8a8a9a;
+          color: var(--muted);
           font-variant-numeric: tabular-nums;
         }
       `}</style>
@@ -299,8 +304,8 @@ function Grid({ max }: { max: number }) {
         const y = PAD.top + PLOT_H - f * PLOT_H;
         return (
           <g key={f}>
-            <line x1={PAD.left} y1={y} x2={W - PAD.right} y2={y} stroke={GRID} strokeWidth={1} />
-            <text x={PAD.left - 8} y={y + 4} fill={INK_DIM} fontSize={11} textAnchor="end">
+            <line x1={PAD.left} y1={y} x2={W - PAD.right} y2={y} style={GRID} strokeWidth={1} />
+            <text x={PAD.left - 8} y={y + 4} style={INK_DIM} fontSize={11} textAnchor="end">
               {short(max * f)}
             </text>
           </g>

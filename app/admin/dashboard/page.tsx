@@ -348,7 +348,7 @@ export default function AdminDashboardPage() {
         }
         .dash-sub {
           margin: 0;
-          color: #8a8a9a;
+          color: var(--muted);
           font-size: 14px;
         }
         .dash-actions {
@@ -358,9 +358,9 @@ export default function AdminDashboardPage() {
         }
         .dash-refresh,
         .dash-link {
-          background: #1a1a26;
-          border: 1px solid #2c2c42;
-          color: #c5c5d5;
+          background: var(--surface);
+          border: 1px solid var(--surface-2);
+          color: var(--muted-strong);
           border-radius: 10px;
           padding: 10px 16px;
           font: inherit;
@@ -385,17 +385,17 @@ export default function AdminDashboardPage() {
           font-size: 14px;
         }
         .dash-error {
-          background: #2a1a1a;
-          border: 1px solid #5a2a2a;
-          color: #f0a0a0;
+          background: var(--danger-bg);
+          border: 1px solid var(--danger-border);
+          color: var(--danger-text);
         }
         .dash-warn {
-          background: #241f14;
-          border: 1px solid #4a3a1a;
-          color: #e8c07a;
+          background: var(--warn-bg);
+          border: 1px solid var(--warn-bg);
+          color: var(--warn-text);
         }
         .dash-muted {
-          color: #8a8a9a;
+          color: var(--muted);
           padding: 12px 0;
           font-size: 14px;
         }
@@ -415,8 +415,8 @@ export default function AdminDashboardPage() {
           gap: 16px;
         }
         .dash-card {
-          background: #14141c;
-          border: 1px solid #23233a;
+          background: var(--surface-3);
+          border: 1px solid var(--surface-2);
           border-radius: 16px;
           padding: 16px 18px;
           margin-bottom: 16px;
@@ -434,12 +434,12 @@ export default function AdminDashboardPage() {
         .dash-hint {
           margin: 0 0 14px;
           font-size: 12px;
-          color: #6a6a7a;
+          color: var(--muted-dim);
         }
 
         /* Tabele */
         .dash-table {
-          border: 1px solid #23233a;
+          border: 1px solid var(--surface-2);
           border-radius: 14px;
           overflow: hidden;
         }
@@ -452,7 +452,7 @@ export default function AdminDashboardPage() {
           align-items: center;
           padding: 11px 16px;
           font-size: 14px;
-          border-top: 1px solid #1e1e2e;
+          border-top: 1px solid var(--border-soft);
         }
         .dash-endpoints .dash-row {
           grid-template-columns: minmax(0, 2fr) 110px 90px 90px;
@@ -462,8 +462,8 @@ export default function AdminDashboardPage() {
         }
         .dash-row-head {
           border-top: none;
-          background: #12121c;
-          color: #8a8a9a;
+          background: var(--surface-3);
+          color: var(--muted);
           font-size: 12px;
           text-transform: uppercase;
           letter-spacing: 0.04em;
@@ -476,14 +476,14 @@ export default function AdminDashboardPage() {
           white-space: nowrap;
         }
         .dash-conv {
-          color: #9aa8ff;
+          color: var(--accent-link);
           text-decoration: none;
         }
         .dash-conv:hover {
           text-decoration: underline;
         }
         .dash-when {
-          color: #8a8a9a;
+          color: var(--muted);
           font-size: 13px;
         }
         .dash-num {
@@ -493,12 +493,12 @@ export default function AdminDashboardPage() {
 
         .dash-foot {
           font-size: 12px;
-          color: #6a6a7a;
+          color: var(--muted-dim);
           line-height: 1.6;
         }
         .dash-foot code {
-          background: #14141c;
-          border: 1px solid #23233a;
+          background: var(--surface-3);
+          border: 1px solid var(--surface-2);
           border-radius: 5px;
           padding: 1px 5px;
         }
@@ -541,14 +541,14 @@ function Tile({
 
       <style jsx>{`
         .tile {
-          background: #14141c;
-          border: 1px solid #23233a;
+          background: var(--surface-3);
+          border: 1px solid var(--surface-2);
           border-radius: 14px;
           padding: 14px 16px;
         }
         .tile-label {
           font-size: 12px;
-          color: #8a8a9a;
+          color: var(--muted);
           text-transform: uppercase;
           letter-spacing: 0.04em;
         }
@@ -563,7 +563,7 @@ function Tile({
         }
         .tile-note {
           font-size: 12px;
-          color: #6a6a7a;
+          color: var(--muted-dim);
         }
       `}</style>
     </div>

@@ -47,7 +47,7 @@ export default function ThinkPage() {
         <div style={{ fontSize: 24, fontWeight: 700 }}>
           🧠 Tryb głębokiego myślenia
         </div>
-        <div style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
           Agent pokazuje tok rozumowania krok po kroku
         </div>
       </header>
@@ -63,7 +63,7 @@ export default function ThinkPage() {
         }}
       >
         {messages.length === 0 && (
-          <p style={{ color: "#888", textAlign: "center", marginTop: 40 }}>
+          <p style={{ color: "var(--muted)", textAlign: "center", marginTop: 40 }}>
             Zadaj trudne pytanie — zobaczysz cały proces myślenia.
           </p>
         )}
@@ -78,8 +78,8 @@ export default function ThinkPage() {
               style={{
                 alignSelf: isUser ? "flex-end" : "flex-start",
                 maxWidth: "85%",
-                background: isUser ? "#2a2a3a" : "#1a1a2a",
-                border: isUser ? "none" : "1px solid #333",
+                background: isUser ? "var(--surface-2)" : "var(--surface)",
+                border: isUser ? "none" : "1px solid var(--border)",
                 borderRadius: 12,
                 padding: "10px 14px",
                 whiteSpace: "pre-wrap",
@@ -95,11 +95,11 @@ export default function ThinkPage() {
           <div
             style={{
               alignSelf: "flex-start",
-              background: "#1a1a2a",
-              border: "1px solid #333",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
               borderRadius: 12,
               padding: "10px 14px",
-              color: "#888",
+              color: "var(--muted)",
             }}
           >
             Myślę...
@@ -117,7 +117,7 @@ export default function ThinkPage() {
           padding: "12px 0 24px",
           position: "sticky",
           bottom: 0,
-          background: "#0a0a0a",
+          background: "var(--bg)",
         }}
       >
         <input
@@ -126,10 +126,10 @@ export default function ThinkPage() {
           placeholder="Zadaj trudne pytanie..."
           style={{
             flex: 1,
-            background: "#1a1a2a",
-            border: "1px solid #333",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "12px 14px",
             fontSize: 16,
             outline: "none",
@@ -139,10 +139,10 @@ export default function ThinkPage() {
           type="submit"
           disabled={isLoading || !input.trim()}
           style={{
-            background: "#2a2a3a",
-            border: "1px solid #444",
+            background: "var(--surface-2)",
+            border: "1px solid var(--border-2)",
             borderRadius: 10,
-            color: "#ededed",
+            color: "var(--text)",
             padding: "0 20px",
             fontSize: 16,
             cursor: isLoading || !input.trim() ? "not-allowed" : "pointer",

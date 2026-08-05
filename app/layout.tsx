@@ -25,12 +25,16 @@ export const metadata: Metadata = {
   // sizes (wielowartościowy "16x16 32x32 48x48" bywa źle parsowany przez
   // Safari) plus jeden PNG 32x32. Warianty 192 i 512 są tam, gdzie ich
   // miejsce — w manifeście PWA, nie w <link rel="icon">.
+  //
+  // ?v=2 to nie ozdobnik: Safari trzyma ikony w cache kluczowanym adresem i
+  // pamięta, że kiedyś tej ikony tu nie było. Zmiana adresu zmusza go do
+  // pobrania od nowa. Przy kolejnej podmianie rysunku podbij numer.
   icons: {
     icon: [
-      { url: "/favicon.ico" },
-      { url: "/icon-32.png", type: "image/png", sizes: "32x32" },
+      { url: "/favicon.ico?v=2" },
+      { url: "/icon-32.png?v=2", type: "image/png", sizes: "32x32" },
     ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+    apple: [{ url: "/apple-touch-icon.png?v=2", sizes: "180x180" }],
   },
   // Podgląd linku na LinkedIn / Slack / Twitterze.
   // Sam obrazek generuje app/opengraph-image.tsx.

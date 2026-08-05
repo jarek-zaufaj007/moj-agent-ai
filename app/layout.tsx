@@ -21,15 +21,14 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   applicationName: "Mój Agent",
   // Favicon i ikona na iOS. Pliki leżą w public/ (wygenerowane w Warsztacie 4).
-  // .ico jest w kodowaniu BMP, nie PNG — Safari nie renderuje ICO
-  // skompresowanych PNG-iem i pokazuje wtedy zastępczą literę domeny.
-  // Wersja 32x32 w PNG stoi obok jako droga, którą Safari lubi najbardziej.
+  // Celowo tylko dwa wpisy, w najbardziej ogranej postaci: .ico bez atrybutu
+  // sizes (wielowartościowy "16x16 32x32 48x48" bywa źle parsowany przez
+  // Safari) plus jeden PNG 32x32. Warianty 192 i 512 są tam, gdzie ich
+  // miejsce — w manifeście PWA, nie w <link rel="icon">.
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+      { url: "/favicon.ico" },
       { url: "/icon-32.png", type: "image/png", sizes: "32x32" },
-      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
-      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
     ],
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
   },

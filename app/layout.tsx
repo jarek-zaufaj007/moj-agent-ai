@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AuthProvider, AppShell } from "@/app/lib/auth";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/app/lib/theme";
+import { InstallPrompt } from "@/app/lib/installPrompt";
 
 // Adres produkcyjny — potrzebny, żeby og:image miał pełny URL (social media
 // nie umieją w ścieżki względne). Na Vercelu można nadpisać przez env.
@@ -20,6 +21,13 @@ export const metadata: Metadata = {
   },
   description: DESCRIPTION,
   applicationName: "Mój Agent",
+  // Po dodaniu do ekranu początkowego iOS ma otworzyć apkę na pełnym ekranie,
+  // bez paska adresu, i podpisać ikonę krótką nazwą.
+  appleWebApp: {
+    capable: true,
+    title: "Mój Agent",
+    statusBarStyle: "black-translucent",
+  },
   // Favicon i ikona na iOS. Pliki leżą w public/ (wygenerowane w Warsztacie 4).
   // Celowo tylko dwa wpisy, w najbardziej ogranej postaci: .ico bez atrybutu
   // sizes (wielowartościowy "16x16 32x32 48x48" bywa źle parsowany przez
@@ -81,6 +89,8 @@ export default function RootLayout({
           <AuthProvider>
             <AppShell>{children}</AppShell>
           </AuthProvider>
+          {/* Pasek „Zainstaluj” — sam się chowa, gdy nie ma czego instalować. */}
+          <InstallPrompt />
         </ThemeProvider>
       </body>
     </html>

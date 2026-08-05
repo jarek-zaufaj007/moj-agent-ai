@@ -358,6 +358,76 @@ body {
   color: var(--text);
 }
 
+/* ── Pasek instalacji PWA ────────────────────────────────────────────── */
+.install-bar {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--muted-strong);
+}
+
+.install-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.install-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.install-btn {
+  flex-shrink: 0;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.install-btn:hover {
+  filter: brightness(1.08);
+}
+
+.install-close {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 4px 6px;
+  line-height: 1;
+}
+
+.install-close:hover {
+  color: var(--text);
+}
+
+@media (min-width: 769px) {
+  .install-bar {
+    left: auto;
+    right: 20px;
+    bottom: 20px;
+    max-width: 420px;
+  }
+}
+
 /* Wariant na landing page — okrągły, tylko ikonka */
 .theme-toggle-lp {
   display: inline-flex;
